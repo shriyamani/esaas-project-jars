@@ -95,6 +95,21 @@ RSpec.describe Post, type: :model do
       expect(Post.active).to include(active_post)
       expect(Post.active).not_to include(expired_post)
     end
+
+    it "excludes posts once their expiration time passes" do
+      start_time = Time.zone.local(2026, 11, 9, 12, 0, 0)
+      post = nil
+
+      travel_to start_time do
+        post = create(:post, expires_at: 1.hour.from_now)
+        expect(Post.active).to include(post)
+      end
+
+      travel_to start_time + 2.hours do
+        expect(Post.active).not_to include(post)
+      end
+    end
+
   end
 
   describe "time zone configuration" do
