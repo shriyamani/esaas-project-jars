@@ -109,7 +109,6 @@ RSpec.describe Post, type: :model do
         expect(Post.active).not_to include(post)
       end
     end
-
   end
 
   describe "time zone configuration" do

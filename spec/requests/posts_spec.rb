@@ -118,7 +118,6 @@ RSpec.describe "Posts", type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
-
   end
 
 
@@ -179,5 +178,4 @@ RSpec.describe "Posts", type: :request do
       expect(response.body).not_to include(expired_post.title)
     end
   end
-
 end

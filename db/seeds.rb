@@ -70,4 +70,3 @@ posts.each do |attributes|
 end
 
 puts "Seed data created successfully."
-
