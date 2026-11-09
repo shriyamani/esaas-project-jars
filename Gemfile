@@ -34,6 +34,12 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# Use Google O-Auth to authenticate users with Columbia/Barnard Emails
+# Devise is a library which automatically handles user login, passwords etc
+gem "devise"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
+
 group :test do
   gem "capybara"
   gem "simplecov", require: false
@@ -61,6 +67,8 @@ group :development, :test do
   gem "sqlite3", ">= 2.1"
 
   gem "factory_bot_rails"
+
+  gem "dotenv-rails"
 end
 
 group :development do

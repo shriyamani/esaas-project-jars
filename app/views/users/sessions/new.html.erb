@@ -1,0 +1,4 @@
+<h1>LionDen: Everything happening at Columbia</h1>
+<p>Sign in with your Columbia or Barnard email.</p>
+<%= button_to "Sign in with Google", user_google_oauth2_omniauth_authorize_path,
+              form: { data: { turbo: false } } %>
