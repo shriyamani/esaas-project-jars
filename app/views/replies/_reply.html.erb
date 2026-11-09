@@ -1,0 +1,21 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <strong>
+      <% if reply.anonymous? %>
+        Anonymous
+      <% else %>
+        <%# TODO: ADAPT to the actual User
+            display attribute. %>
+        <%= reply.user.email %>
+      <% end %>
+    </strong>
+
+    <small class="text-muted">
+      <%= time_ago_in_words(reply.created_at) %> ago
+    </small>
+
+    <p class="mt-2 mb-0">
+      <%= reply.body %>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<%# TODO: ADAPT if the parent model or
+    nested reply route is different. %>
+
+<%= form_with model: [post, Reply.new] do |f| %>
+  <div class="mb-3">
+    <%= f.label :body, "Write a reply" %>
+
+    <%= f.text_area :body,
+          class: "form-control",
+          rows: 3,
+          required: true %>
+  </div>
+
+  <div class="form-check mb-3">
+    <%= f.check_box :anonymous,
+          class: "form-check-input" %>
+
+    <%= f.label :anonymous,
+          "Reply anonymously",
+          class: "form-check-label" %>
+  </div>
+
+  <%= f.submit "Post Reply",
+        class: "btn btn-primary" %>
+<% end %>
