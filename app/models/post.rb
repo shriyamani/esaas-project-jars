@@ -11,6 +11,7 @@ class Post < ApplicationRecord
   validates :title, presence: true
   validates :category, presence: true, inclusion: { in: CATEGORIES }
   validates :expires_at, presence: true
+  validate :expires_at_must_be_in_the_future, if: -> { expires_at.present? && expires_at_changed? }
 
   scope :active, -> { where("expires_at > ?", Time.current) }
 
@@ -19,6 +20,10 @@ class Post < ApplicationRecord
   end
 
   private
+
+  def expires_at_must_be_in_the_future
+    errors.add(:expires_at, "must be in the future") if expires_at <= Time.current
+  end
 
   def apply_expiration_preset
     case expiration_preset

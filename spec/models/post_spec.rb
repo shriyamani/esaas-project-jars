@@ -45,6 +45,12 @@ RSpec.describe Post, type: :model do
       expect(post).not_to be_valid
       expect(post.errors[:expires_at]).to include("can't be blank")
     end
+
+    it "rejects an expiration date in the past" do
+      post = build(:post, expires_at: 1.hour.ago)
+      expect(post).not_to be_valid
+      expect(post.errors[:expires_at]).to include("must be in the future")
+    end
   end
 
   describe "expiration preset conversion" do
@@ -83,10 +89,17 @@ RSpec.describe Post, type: :model do
   describe ".active" do
     it "returns only non-expired posts" do
       active_post = create(:post, expires_at: 2.days.from_now)
-      expired_post = create(:post, expires_at: 2.days.ago)
+      expired_post = build(:post, expires_at: 2.days.ago)
+      expired_post.save(validate: false)
 
       expect(Post.active).to include(active_post)
       expect(Post.active).not_to include(expired_post)
+    end
+  end
+
+  describe "time zone configuration" do
+    it "uses Eastern Time" do
+      expect(Time.zone.name).to eq("Eastern Time (US & Canada)")
     end
   end
 end
