@@ -1,5 +1,13 @@
 <h1>LionDen Posts</h1>
 
+<div class="category-filters">
+  <%= link_to "All Posts", posts_path %>
+
+  <% Post::CATEGORIES.each do |category| %>
+    <%= link_to category, posts_path(category: category) %>
+  <% end %>
+</div>
+
 <div>
   <%= link_to "New Post", new_post_path %>
 </div>
