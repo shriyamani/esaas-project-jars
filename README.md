@@ -1,24 +1,37 @@
 # README
+COMSW4152 Engineering Software-as-a-Service
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+### LionDen: Everything happening at Columbia 
 
-Things you may want to cover:
+**Group Members**
+- Angelina Yeh (ay2667)
+- Ritika Calyanakoti (rc3934)
+- Janice Wong (jsw2219)
+- Shriya Mani (sm5586)
 
-* Ruby version
+## Heroku deployed app
+https://lionden-cu-57aca13d2150.herokuapp.com \
+Sign in with a Columbia or Barnard email account.
 
-* System dependencies
+## Running locally
+Requires Ruby 3.3.12 and Bundler.
+```bash
+git clone https://github.com/shriyamani/esaas-project-jars.git
+cd esaas-project-jars
+bundle config set --local without production
+bundle install
+bin/rails db:prepare
+```
+Create a `.env` file in the project root (provided in Courseworks submission):
+```
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+```
+Then run `bin/rails server` and visit http://localhost:3000.
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Running tests
+No real Google credentials are needed for tests.
+```bash
+bundle exec rspec       # RSpec validations
+bundle exec cucumber    # Cucumber stories
+```
