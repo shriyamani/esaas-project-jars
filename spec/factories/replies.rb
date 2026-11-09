@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :reply do
-    post { nil }
-    user { nil }
+    association :post
+    association :user
     body { "MyText" }
     anonymous { false }
   end

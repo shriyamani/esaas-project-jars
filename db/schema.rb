@@ -10,16 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 0) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
+ActiveRecord::Schema[8.1].define(version: 2026_11_09_230000) do
+  create_table "posts", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "body"
+    t.string "category", null: false
+    t.boolean "anonymous", default: false, null: false
+    t.datetime "expires_at", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_posts_on_category"
+    t.index ["expires_at"], name: "index_posts_on_expires_at"
+    t.index ["user_id"], name: "index_posts_on_user_id"
+  end
 
-<<<<<<< Updated upstream
-=======
   create_table "replies", force: :cascade do |t|
     t.integer "post_id", null: false
-    t.text "body"
-    t.boolean "anonymous"
+    t.integer "user_id", null: false
+    t.text "body", null: false
+    t.boolean "anonymous", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["post_id"], name: "index_replies_on_post_id"
@@ -37,5 +47,4 @@ ActiveRecord::Schema[8.1].define(version: 0) do
   add_foreign_key "posts", "users"
   add_foreign_key "replies", "posts"
   add_foreign_key "replies", "users"
->>>>>>> Stashed changes
 end

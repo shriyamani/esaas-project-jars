@@ -8,13 +8,15 @@ class Reply < ApplicationRecord
 
   validate :post_must_be_active, on: :create
 
+  def display_author
+    anonymous? ? "Anonymous" : user&.name
+  end
+
   private
 
   def post_must_be_active
     return if post.nil?
 
-    # TODO: ADAPT to Person 2's expiration logic.
-    # This assumes Post has expires_at.
     if post.expires_at.blank? ||
        post.expires_at <= Time.current
       errors.add(:post, "has expired")

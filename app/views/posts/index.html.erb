@@ -1,0 +1,29 @@
+<h1>LionDen Posts</h1>
+
+
+<div>
+  <%= link_to "New Post", new_post_path %>
+</div>
+
+<div id="posts">
+  <% if @posts.empty? %>
+    <p>No active posts found.</p>
+  <% else %>
+    <% @posts.each do |post| %>
+      <div id="<%= dom_id(post) %>" class="post-card">
+        <h2><%= link_to post.title, post_path(post) %></h2>
+        <p><strong>Category:</strong> <%= post.category %></p>
+        <p><strong>Author:</strong> <span class="author-name"><%= post.display_author %></span></p>
+        <p><strong>Expires at:</strong> <%= post.expires_at.strftime("%B %d, %Y %I:%M %p") if post.expires_at %></p>
+        <p><%= truncate(post.body, length: 150) %></p>
+        <div>
+          <%= link_to "View", post_path(post) %>
+          <% if post.user == current_user %>
+            | <%= link_to "Edit", edit_post_path(post) %>
+            | <%= button_to "Delete", post_path(post), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

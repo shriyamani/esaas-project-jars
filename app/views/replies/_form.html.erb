@@ -1,6 +1,3 @@
-<%# TODO: ADAPT if the parent model or
-    nested reply route is different. %>
-
 <%= form_with model: [post, Reply.new] do |f| %>
   <div class="mb-3">
     <%= f.label :body, "Write a reply" %>
@@ -8,6 +5,7 @@
     <%= f.text_area :body,
           class: "form-control",
           rows: 3,
+          maxlength: 2000,
           required: true %>
   </div>
 

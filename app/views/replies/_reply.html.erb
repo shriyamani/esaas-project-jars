@@ -1,13 +1,7 @@
 <div class="card mb-3">
   <div class="card-body">
     <strong>
-      <% if reply.anonymous? %>
-        Anonymous
-      <% else %>
-        <%# TODO: ADAPT to the actual User
-            display attribute. %>
-        <%= reply.user.email %>
-      <% end %>
+      <%= reply.display_author %>
     </strong>
 
     <small class="text-muted">
