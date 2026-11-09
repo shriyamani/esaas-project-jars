@@ -4,6 +4,7 @@ Rails.application.routes.draw do
     get    "users/sign_in",  to: "users/sessions#new",     as: :new_user_session
     delete "users/sign_out", to: "devise/sessions#destroy", as: :destroy_user_session
   end
+  resources :posts
   root "pages#home"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

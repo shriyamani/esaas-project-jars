@@ -1,0 +1,48 @@
+<%= form_with(model: post) do |form| %>
+  <% if post.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
+      <ul>
+        <% post.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.label :body %>
+    <%= form.text_area :body %>
+  </div>
+
+  <div>
+    <%= form.label :category %>
+    <%= form.select :category, Post::CATEGORIES, prompt: "Select a category" %>
+  </div>
+
+  <div>
+    <%= form.label :anonymous do %>
+      <%= form.check_box :anonymous %>
+      Post anonymously
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :expiration_preset, "Expiration Preset" %>
+    <%= form.select :expiration_preset, Post::EXPIRATION_PRESETS, prompt: "Select preset" %>
+  </div>
+
+  <div>
+    <%= form.label :custom_expires_at, "Or custom expiration date" %>
+    <%= form.datetime_local_field :custom_expires_at %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

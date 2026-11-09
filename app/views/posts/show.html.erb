@@ -1,0 +1,18 @@
+<div>
+  <h1><%= @post.title %></h1>
+  <p><strong>Category:</strong> <%= @post.category %></p>
+  <p><strong>Author:</strong> <span class="author-name"><%= @post.display_author %></span></p>
+  <p><strong>Expires at:</strong> <%= @post.expires_at.strftime("%B %d, %Y %I:%M %p") if @post.expires_at %></p>
+
+  <div>
+    <%= simple_format(@post.body) %>
+  </div>
+
+  <div>
+    <% if @post.user == current_user %>
+      <%= link_to "Edit", edit_post_path(@post) %> |
+      <%= button_to "Delete", post_path(@post), method: :delete, data: { turbo_confirm: "Are you sure?" } %> |
+    <% end %>
+    <%= link_to "Back to posts", posts_path %>
+  </div>
+</div>
