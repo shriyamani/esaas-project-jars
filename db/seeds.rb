@@ -1,3 +1,5 @@
+return if Rails.env.test?
+
 # Create demo users
 users = [
   { name: "Angelina Yeh ", email: "ay2667@columbia.edu" },
