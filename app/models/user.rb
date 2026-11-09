@@ -1,7 +1,9 @@
 class User < ApplicationRecord
   ALLOWED_DOMAINS = %w[columbia.edu barnard.edu].freeze
 
-  devise :omniauthable, omniauth_providers: [:google_oauth2]
+  devise :omniauthable, omniauth_providers: [ :google_oauth2 ]
+
+  has_many :posts, dependent: :destroy
 
   before_validation { self.email = email.to_s.strip.downcase }
 
