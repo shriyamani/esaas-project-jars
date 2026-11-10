@@ -124,5 +124,4 @@ RSpec.describe "Replies", type: :request do
       expect(reply.reload.body).to eq("Original")
     end
   end
-
 end
