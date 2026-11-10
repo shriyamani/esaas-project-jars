@@ -20,7 +20,7 @@
           <%= link_to "View", post_path(post) %>
           <% if post.user == current_user %>
             <%= link_to "Edit", edit_post_path(post) %>
-            <%= button_to "Delete", post_path(post), method: :delete, class: "delete-link", data: { turbo_confirm: "Are you sure?" } %>
+            <%= button_to "Delete", post_path(post), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
           <% end %>
         </div>
       </div>
