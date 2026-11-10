@@ -1,0 +1,12 @@
+<div id="<%= dom_id(reply) %>">
+  <p><strong><%= reply.display_author %></strong></p>
+  <p><%= time_ago_in_words(reply.created_at) %> ago</p>
+  <p><%= reply.body %></p>
+  <% if reply.user == current_user %>
+    <div>
+      <%= link_to "Edit", edit_post_reply_path(reply.post, reply) %>
+      <%= button_to "Delete", post_reply_path(reply.post, reply), method: :delete,
+            data: { turbo_confirm: "Delete this reply?" } %>
+    </div>
+  <% end %>
+</div>

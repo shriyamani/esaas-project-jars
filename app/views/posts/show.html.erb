@@ -10,9 +10,17 @@
 
   <div>
     <% if @post.user == current_user %>
-      <%= link_to "Edit", edit_post_path(@post) %> |
-      <%= button_to "Delete", post_path(@post), method: :delete, data: { turbo_confirm: "Are you sure?" } %> |
+      <%= link_to "Edit", edit_post_path(@post) %>
+      <%= button_to "Delete", post_path(@post), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
     <% end %>
     <%= link_to "Back to posts", posts_path %>
   </div>
+</div>
+
+<div>
+  <h2>Replies</h2>
+  <div id="replies">
+    <%= render @post.replies.includes(:user).order(:created_at, :id) %>
+  </div>
+  <%= render "replies/form", post: @post %>
 </div>
