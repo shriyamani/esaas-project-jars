@@ -1,0 +1,27 @@
+<%= form_with(model: [post, local_assigns.fetch(:reply) { Reply.new }]) do |form| %>
+  <% if form.object.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(form.object.errors.count, "error") %> prohibited this reply from being saved:</h2>
+      <ul>
+        <% form.object.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div>
+    <%= form.label :body, "Write a reply" %>
+    <%= form.text_area :body, maxlength: 2000 %>
+  </div>
+
+  <div>
+    <%= form.label :anonymous do %>
+      <%= form.check_box :anonymous %>
+      Reply anonymously
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.submit(form.object.persisted? ? "Save Reply" : "Post Reply") %>
+  </div>
+<% end %>

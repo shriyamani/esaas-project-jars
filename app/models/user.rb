@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   devise :omniauthable, omniauth_providers: [ :google_oauth2 ]
 
+  has_many :replies, dependent: :destroy
   has_many :posts, dependent: :destroy
 
   before_validation { self.email = email.to_s.strip.downcase }

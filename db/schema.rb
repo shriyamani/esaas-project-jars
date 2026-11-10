@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_08_221000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_09_230000) do
   create_table "posts", force: :cascade do |t|
     t.string "title", null: false
     t.text "body"
@@ -25,6 +25,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_08_221000) do
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
+  create_table "replies", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "user_id", null: false
+    t.text "body", null: false
+    t.boolean "anonymous", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_replies_on_post_id"
+    t.index ["user_id"], name: "index_replies_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "name", null: false
@@ -34,4 +45,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_08_221000) do
   end
 
   add_foreign_key "posts", "users"
+  add_foreign_key "replies", "posts"
+  add_foreign_key "replies", "users"
 end

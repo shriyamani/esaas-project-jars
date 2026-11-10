@@ -27,6 +27,15 @@ RSpec.describe "Authentication", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
+    it "keeps the sign-in alert visible when the sign-in page is revisited" do
+      get root_path
+      follow_redirect!
+      expect(response.body).to include(I18n.t("devise.failure.unauthenticated"))
+
+      get new_user_session_path
+      expect(response.body).to include(I18n.t("devise.failure.unauthenticated"))
+    end
+
     it "shows the home page to signed-in users" do
       sign_in create(:user)
       get root_path

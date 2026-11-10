@@ -24,7 +24,7 @@
   </head>
 
   <body>
-    <nav>
+    <nav aria-label="Main navigation">
       <%= link_to "LionDen", root_path %>
       <% if user_signed_in? %>
         <%= link_to "Posts", posts_path %>
@@ -33,9 +33,17 @@
         <%= button_to "Log out", destroy_user_session_path, method: :delete %>
       <% end %>
     </nav>
-    <% flash.each do |type, message| %>
-      <div class="flash flash-<%= type %>"><%= message %></div>
+    <% if user_signed_in? %>
+      <nav aria-label="Categories">
+        <%= link_to "All Posts", posts_path %>
+        <% Post::CATEGORIES.each do |category| %>
+          <%= link_to category, posts_path(category: category) %>
+        <% end %>
+      </nav>
     <% end %>
-    <%= yield %>
+    <% flash.each do |type, message| %>
+      <div role="status"><%= message %></div>
+    <% end %>
+    <main><%= yield %></main>
   </body>
 </html>
