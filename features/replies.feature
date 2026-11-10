@@ -26,3 +26,21 @@ Feature: Replies on posts
     And I open the discussion
     Then the discussion replies include "An anonymous suggestion"
     And the reply author is anonymous
+
+  Scenario: Edit my reply
+    When I open the discussion
+    And I fill in "Write a reply" with "Original suggestion"
+    And I press "Post Reply"
+    And I edit my reply
+    And I fill in "Write a reply" with "Updated suggestion"
+    And I press "Save Reply"
+    Then the discussion replies include "Updated suggestion"
+    And I should not see "Original suggestion"
+
+  Scenario: Delete my reply
+    When I open the discussion
+    And I fill in "Write a reply" with "Remove this suggestion"
+    And I press "Post Reply"
+    And I delete my reply
+    Then I should see "Reply deleted successfully."
+    And the discussion has no replies

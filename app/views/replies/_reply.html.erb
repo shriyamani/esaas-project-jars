@@ -1,4 +1,4 @@
-<div class="card mb-3">
+<div id="<%= dom_id(reply) %>" class="card mb-3">
   <div class="card-body">
     <strong>
       <%= reply.display_author %>
@@ -11,5 +11,12 @@
     <p class="mt-2 mb-0">
       <%= reply.body %>
     </p>
+    <% if reply.user == current_user %>
+      <div class="action-links">
+        <%= link_to "Edit", edit_post_reply_path(reply.post, reply) %>
+        <%= button_to "Delete", post_reply_path(reply.post, reply), method: :delete, class: "delete-link",
+              data: { turbo_confirm: "Delete this reply?" } %>
+      </div>
+    <% end %>
   </div>
 </div>

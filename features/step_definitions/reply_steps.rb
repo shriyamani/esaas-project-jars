@@ -28,3 +28,11 @@ end
 Then("the discussion has no replies") do
   expect(@discussion.replies.count).to eq(0)
 end
+
+When("I edit my reply") do
+  within("#replies") { click_link "Edit" }
+end
+
+When("I delete my reply") do
+  within("#replies") { click_button "Delete" }
+end

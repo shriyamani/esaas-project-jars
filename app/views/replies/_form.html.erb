@@ -1,4 +1,7 @@
-<%= form_with model: [post, Reply.new] do |f| %>
+<%= form_with model: [post, local_assigns.fetch(:reply) { Reply.new }] do |f| %>
+  <% if f.object.errors.any? %>
+    <div role="alert"><%= f.object.errors.full_messages.to_sentence %></div>
+  <% end %>
   <div class="mb-3">
     <%= f.label :body, "Write a reply" %>
 
@@ -18,6 +21,6 @@
           class: "form-check-label" %>
   </div>
 
-  <%= f.submit "Post Reply",
-        class: "btn btn-primary" %>
+  <%= f.submit(f.object.persisted? ? "Save Reply" : "Post Reply",
+        class: "btn btn-primary") %>
 <% end %>

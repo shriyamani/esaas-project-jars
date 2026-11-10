@@ -1,0 +1,3 @@
+<h1>Edit reply</h1>
+<%= render "form", post: @post, reply: @reply %>
+<%= link_to "Cancel", @post.expires_at.present? && @post.expires_at > Time.current ? post_path(@post) : posts_path %>

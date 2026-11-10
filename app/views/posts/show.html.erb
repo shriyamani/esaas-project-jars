@@ -8,10 +8,10 @@
     <%= simple_format(@post.body) %>
   </div>
 
-  <div>
+  <div class="action-links">
     <% if @post.user == current_user %>
-      <%= link_to "Edit", edit_post_path(@post) %> |
-      <%= button_to "Delete", post_path(@post), method: :delete, data: { turbo_confirm: "Are you sure?" } %> |
+      <%= link_to "Edit", edit_post_path(@post) %>
+      <%= button_to "Delete", post_path(@post), method: :delete, class: "delete-link", data: { turbo_confirm: "Are you sure?" } %>
     <% end %>
     <%= link_to "Back to posts", posts_path %>
   </div>

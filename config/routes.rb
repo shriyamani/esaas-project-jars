@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     delete "users/sign_out", to: "devise/sessions#destroy", as: :destroy_user_session
   end
   resources :posts do
-    resources :replies, only: :create
+    resources :replies, only: [ :create, :edit, :update, :destroy ]
   end
   root "pages#home"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

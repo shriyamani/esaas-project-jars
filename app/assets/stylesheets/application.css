@@ -20,3 +20,26 @@ button, input[type="submit"] { padding: .5rem .8rem; cursor: pointer; }
 .flash-alert { background: #ffe4e4; }
 .mb-3 { margin-bottom: 1rem; }
 .text-muted { color: #526172; }
+
+.action-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem 1.25rem;
+  margin-top: 1rem;
+  padding-block: .5rem;
+}
+.action-links > a { padding-block: .5rem; }
+.action-links > form, nav > form { margin: 0; }
+
+.delete-link {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: .5rem 0;
+  color: #1559a0;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

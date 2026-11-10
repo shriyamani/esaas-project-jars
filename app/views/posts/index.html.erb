@@ -16,11 +16,11 @@
         <p><strong>Author:</strong> <span class="author-name"><%= post.display_author %></span></p>
         <p><strong>Expires at:</strong> <%= post.expires_at.strftime("%B %d, %Y %I:%M %p") if post.expires_at %></p>
         <p><%= truncate(post.body, length: 150) %></p>
-        <div>
+        <div class="action-links">
           <%= link_to "View", post_path(post) %>
           <% if post.user == current_user %>
-            | <%= link_to "Edit", edit_post_path(post) %>
-            | <%= button_to "Delete", post_path(post), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
+            <%= link_to "Edit", edit_post_path(post) %>
+            <%= button_to "Delete", post_path(post), method: :delete, class: "delete-link", data: { turbo_confirm: "Are you sure?" } %>
           <% end %>
         </div>
       </div>
