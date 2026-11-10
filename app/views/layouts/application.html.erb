@@ -35,12 +35,14 @@
         <%= link_to "Log in", new_user_session_path %>
       <% end %>
     </nav>
-    <nav aria-label="Categories">
-      <%= link_to "All Posts", posts_path %>
-      <% Post::CATEGORIES.each do |category| %>
-        <%= link_to category, posts_path(category: category) %>
-      <% end %>
-    </nav>
+    <% if user_signed_in? %>
+      <nav aria-label="Categories">
+        <%= link_to "All Posts", posts_path %>
+        <% Post::CATEGORIES.each do |category| %>
+          <%= link_to category, posts_path(category: category) %>
+        <% end %>
+      </nav>
+    <% end %>
     <% flash.each do |type, message| %>
       <div role="status"><%= message %></div>
     <% end %>
