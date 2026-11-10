@@ -61,6 +61,13 @@ RSpec.describe "Posts", type: :request do
       expect(post_record.reload.title).to eq("Updated Title")
     end
 
+    it "renders validation errors without saving an invalid update" do
+      patch post_path(post_record), params: { post: { title: "" } }
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(post_record.reload.title).to eq("Original Title")
+      expect(response.body).to include("Title can&#39;t be blank")
+    end
+
     it "allows deleting their post" do
       expect {
         delete post_path(post_record)
