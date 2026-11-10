@@ -4,6 +4,8 @@ class Post < ApplicationRecord
 
   attr_accessor :expiration_preset, :custom_expires_at
 
+  has_many :replies, dependent: :destroy
+
   belongs_to :user
 
   before_validation :apply_expiration_preset
