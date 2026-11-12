@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Esaas Project Jars" %></title>
+    <title><%= content_for(:title) || "LionDen" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Esaas Project Jars">
+    <meta name="application-name" content="LionDen">
     <meta name="mobile-web-app-capable" content="yes">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -15,7 +18,6 @@
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
@@ -25,8 +27,8 @@
 
   <body>
     <nav aria-label="Main navigation">
-      <%= link_to "LionDen", root_path %>
       <% if user_signed_in? %>
+        <%= link_to "LionDen", root_path %>
         <%= link_to "Posts", posts_path %>
         <%= link_to "New Post", new_post_path %>
         <span><%= current_user.name %></span>
@@ -41,7 +43,9 @@
         <% end %>
       </nav>
     <% end %>
+    <% hidden = [t("devise.failure.unauthenticated"), t("devise.sessions.signed_out")] %>
     <% flash.each do |type, message| %>
+      <% next if hidden.include?(message) %>
       <div role="status"><%= message %></div>
     <% end %>
     <main><%= yield %></main>

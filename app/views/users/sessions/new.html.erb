@@ -1,4 +1,18 @@
-<h1>LionDen: Everything happening at Columbia</h1>
-<p>Sign in with your Columbia or Barnard email.</p>
-<%= button_to "Sign in with Google", user_google_oauth2_omniauth_authorize_path,
-              form: { data: { turbo: false } } %>
+<% content_for :title, "Sign in · LionDen" %>
+<% content_for :hide_chrome, true %>
+
+<div class="public_shell">
+    <%= render "shared/public_nav" %>
+    <main class="login_page">
+        <section class="login_card">
+            <img src="/icon.png" alt="LionDen logo" class="lion_logo">
+            <h1 class="title">LionDen: Everything happening at Columbia</h1>
+            <p class="tagline">Sign in with your Columbia or Barnard email address</p>
+            <%= button_to user_google_oauth2_omniauth_authorize_path,
+                    class: "google_button", title: "Sign in with Google",
+                    form: { class: "login_form", data: { turbo: false } } do %>
+                <%= image_tag "google_button.png", alt: "Sign in with Google", height: 40 %>
+            <% end %>
+        </section>
+    </main>
+</div>

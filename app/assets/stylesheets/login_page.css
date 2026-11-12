@@ -1,0 +1,115 @@
+body{
+    background-color: #B9D9EB;
+    margin: 0;
+}
+
+.login_card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 75vh;
+    gap: 0.5rem;
+}
+
+.login_form {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+.lion_logo{
+    width: 10%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.title{
+    margin-top: 0;   
+    margin-bottom: 0.4rem; 
+    font-size: 2.5rem;
+    text-align: center;
+}
+.tagline{  
+    margin: 0;
+    font-size: 1.5rem;
+    font-style: italic;
+    text-align: center;
+}
+
+.google_button{
+    background: none; 
+    padding: 0;
+    border: 0; 
+    cursor: pointer; 
+}
+
+.google_button img {
+    width: 15rem;
+    height: auto;
+}
+
+.public_shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.public_nav {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.logo_title {
+  color: #012169;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.nav_items {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav_btn {
+  padding: 0.9rem;
+  background: #012169;
+  border-radius: 0.5rem;
+  color: #B9D9EB;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.info_page {
+  max-width: 80%;
+  padding: 0 5rem;   
+  text-align: left;
+}
+
+.info_title {
+  margin: 2rem 0 0.5rem;
+  font-size: 2rem;
+}
+
+.faq_item {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid rgba(11, 37, 69, 0.15);
+}
+
+.faq_item:last-child {
+  border-bottom: none;
+}
+
+.faq_item h2 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+}
+
+.faq_item p {
+  line-height: 1.55;
+}
