@@ -26,28 +26,30 @@
   </head>
 
   <body>
-    <nav aria-label="Main navigation">
+    <% if content_for?(:hide_chrome) %>
+      <%# Public pages (sign-in, FAQ, About, Contact) render their own nav and flash %>
+      <%= yield %>
+    <% else %>
       <% if user_signed_in? %>
-        <%= link_to "LionDen", root_path %>
-        <%= link_to "Posts", posts_path %>
-        <%= link_to "New Post", new_post_path %>
-        <span><%= current_user.name %></span>
-        <%= button_to "Log out", destroy_user_session_path, method: :delete %>
+        <nav aria-label="Main navigation">
+          <%= link_to "LionDen", root_path %>
+          <%= link_to "Posts", posts_path %>
+          <%= link_to "New Post", new_post_path %>
+          <span><%= current_user.name %></span>
+          <%= button_to "Log out", destroy_user_session_path, method: :delete %>
+        </nav>
+
+        <nav aria-label="Categories">
+          <%= link_to "All Posts", posts_path %>
+          <% Post::CATEGORIES.each do |category| %>
+            <%= link_to category, posts_path(category: category) %>
+          <% end %>
+        </nav>
       <% end %>
-    </nav>
-    <% if user_signed_in? %>
-      <nav aria-label="Categories">
-        <%= link_to "All Posts", posts_path %>
-        <% Post::CATEGORIES.each do |category| %>
-          <%= link_to category, posts_path(category: category) %>
-        <% end %>
-      </nav>
+
+      <%= render "shared/flash" %>
+
+      <main><%= yield %></main>
     <% end %>
-    <% hidden = [t("devise.failure.unauthenticated"), t("devise.sessions.signed_out")] %>
-    <% flash.each do |type, message| %>
-      <% next if hidden.include?(message) %>
-      <div role="status"><%= message %></div>
-    <% end %>
-    <main><%= yield %></main>
   </body>
 </html>
