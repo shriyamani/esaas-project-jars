@@ -8,3 +8,27 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+body {
+  font-family: "Inter";
+}
+
+.flash_banner {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  width: 40%;
+  margin: 0 auto;
+}
+
+.flash_banner--alert {
+  background: #fdecec;
+  color: #a12828;
+  border: 1px solid #f3b9b9;
+}
+
+.flash_banner--notice {
+  background: #e7f6ec;
+  color: #1e6b3a;
+  border: 1px solid #b6e2c4;
+}

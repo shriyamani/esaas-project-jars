@@ -1,0 +1,55 @@
+<% content_for :title, "FAQ · LionDen" %>
+<% content_for :hide_chrome, true %>
+
+<div class="public_shell">
+  <%= render "shared/public_nav" %>
+
+  <main class="info_page">
+    <h1 class="info_title">FAQ</h1>
+
+    <div class="faq_item">
+      <h2>Q: What is LionDen?</h2>
+      <p>
+        A: LionDen is one centralized “bulletin board” for student life. This application is authenticated:
+        students must log in with their Columbia/Barnard email addresses to verify their student status.
+        Students can then write posts or messages, either anonymously or under their name, about anything.
+        They can assign these posts to one of many categories: Social, Academics, Housing, Buy/Sell Items,
+        Travel, Help, etc.
+      </p>
+      <p>
+        Users can “follow” a specific category that they are interested in, and can get notifications whenever
+        a post is made in that category (email or text notifications). Anyone can reply to a post with a direct
+        message, and the person who posted it will get the notification. This application will automatically
+        create a group chat/messaging channel for all those who respond to a specific activity, and authors can
+        set a limit on the number of people they are looking for.
+      </p>
+      <p>
+        LionDen also facilitates meetups or informal, one-time/recurring gatherings like book clubs, movie nights,
+        or group concert trips. This kind of “meetup” can be a posted event with a description, date, time, and
+        location. Students can join once or on a recurring basis, and these events will appear on an integrated
+        calendar where they can see all the events for the week/month. You can see a calendar for all general
+        events, as well as one with the specific events you signed up for.
+      </p>
+    </div>
+
+    <div class="faq_item">
+      <h2>Q: Who can join?</h2>
+      <p>A: Only students with a @columbia.edu or @barnard.edu Google account, so you know you're talking to a verified student.</p>
+    </div>
+
+    <div class="faq_item">
+      <h2>Q: Can I post anonymously?</h2>
+      <p>A: Yes. Any post or reply can be anonymous or display your name.</p>
+    </div>
+
+    <div class="faq_item">
+      <h2>Q: Why do posts expire?</h2>
+      <p>A: Authors choose when their posts disappear (for example, "tonight", "this week", or a custom time), so the board only shows relevant and current events.</p>
+    </div>
+
+    <div class="faq_item">
+      <h2>Q: Is this an official Columbia app?</h2>
+      <p>A: No. LionDen is a student project and isn't affiliated with Columbia University.</p>
+    </div>
+  </main>
+</div>

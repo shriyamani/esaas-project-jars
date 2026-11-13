@@ -1,0 +1,11 @@
+<% hidden = [t("devise.failure.unauthenticated"), t("devise.sessions.signed_out")] %>
+<% messages = flash.to_hash.reject { |_type, message| hidden.include?(message) } %>
+
+<% if messages.any? %>
+  <% messages.each do |type, message| %>
+    <div class="flash_banner flash_banner--<%= type %>"
+          role="<%= type.to_s == "alert" ? "alert" : "status" %>">
+      <%= message %>
+    </div>
+  <% end %>
+<% end %>
