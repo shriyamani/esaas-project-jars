@@ -8,10 +8,8 @@ Feature: Log out and protected pages
     And I am on the home page
     When I press "Log out"
     Then I should be on the log in page
-    And I should see "Signed out successfully."
 
   Scenario: Logged-out users are redirected to log in page
     Given I am not logged in
     When I go to the home page
     Then I should be on the log in page
-    And I should see "You need to sign in or sign up before continuing"

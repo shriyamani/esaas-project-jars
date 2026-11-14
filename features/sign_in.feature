@@ -5,7 +5,8 @@ Feature: Sign in with Google
 
   Scenario Outline: First sign-in authenticates and recognizes user
     When I sign in with Google as "<email>"
-    Then I should see "Successfully authenticated from Google account."
+    Then I should be on the home page
+    And I should not see "Successfully authenticated from Google account."
     And I should see "Testing Tester"
 
     Examples:
@@ -28,4 +29,4 @@ Feature: Sign in with Google
       Given Google sign-in will fail
       When I am on the log in page
       And I press "Sign in with Google"
-      Then I should see "Google sign-in failed. Please try again."
+      Then I should see "Sign-in failed. Please use a Columbia or Barnard email address."

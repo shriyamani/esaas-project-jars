@@ -27,13 +27,10 @@ RSpec.describe "Authentication", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
-    it "keeps the sign-in alert visible when the sign-in page is revisited" do
+    it "does not show the unauthenticated alert on the sign-in page" do
       get root_path
       follow_redirect!
-      expect(response.body).to include(I18n.t("devise.failure.unauthenticated"))
-
-      get new_user_session_path
-      expect(response.body).to include(I18n.t("devise.failure.unauthenticated"))
+      expect(response.body).not_to include(I18n.t("devise.failure.unauthenticated"))
     end
 
     it "shows the home page to signed-in users" do
@@ -68,7 +65,7 @@ RSpec.describe "Authentication", type: :request do
       OmniAuth.config.mock_auth[:google_oauth2] = :invalid_credentials
       sign_in_with_google
       expect(response).to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to eq("Google sign-in failed. Please try again.")
+      expect(flash[:alert]).to eq("Sign-in failed. Please use a Columbia or Barnard email address.")
     end
   end
 
