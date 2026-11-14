@@ -1,5 +1,5 @@
 class Post < ApplicationRecord
-  CATEGORIES = [ "Social", "Academics", "Housing", "Buy/Sell", "Travel", "Help" ].freeze
+  CATEGORIES = ["Social", "Academics", "Housing", "Buy/Sell", "Travel", "Help" ].freeze
   EXPIRATION_PRESETS = [ "Tonight", "This week", "Custom" ].freeze
 
   attr_accessor :expiration_preset, :custom_expires_at

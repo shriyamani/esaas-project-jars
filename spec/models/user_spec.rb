@@ -25,6 +25,31 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "category follows" do
+    let(:user) { create(:user) }
+
+    it "returns the categories the user follows" do
+      create(:category_follow, user: user, category: "Housing")
+      create(:category_follow, user: user, category: "Travel")
+      expect(user.followed_categories).to contain_exactly("Housing", "Travel")
+    end
+
+    it "returns an empty list when the user follows nothing" do
+      expect(user.followed_categories).to eq([])
+    end
+
+    it "knows whether the user follows a category" do
+      create(:category_follow, user: user, category: "Housing")
+      expect(user.follows?("Housing")).to be true
+      expect(user.follows?("Academics")).to be false
+    end
+
+    it "deletes the user's follows when the user is deleted" do
+      create(:category_follow, user: user)
+      expect { user.destroy }.to change(CategoryFollow, :count).by(-1)
+    end
+  end
+
   describe "email domain" do
     %w[sm5586@barnard.edu jsw2219@columbia.edu ay2667@columbia.edu SM5586@barnard.EDU].each do |email|
       it "accepts #{email}" do
@@ -75,5 +100,7 @@ RSpec.describe User, type: :model do
       expect(user).not_to be_persisted
       expect(user.errors[:email]).to include("must be a Columbia or Barnard address")
     end
+
+    
   end
 end

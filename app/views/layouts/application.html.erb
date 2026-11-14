@@ -31,20 +31,17 @@
       <%= yield %>
     <% else %>
       <% if user_signed_in? %>
-        <nav aria-label="Main navigation">
-          <%= link_to "LionDen", root_path %>
+        <nav aria-label="Main navigation" class="main_nav">
+          <%= link_to root_path, class: "brand", aria: { label: "LionDen home" } do %>
+            <img src="/icon.png" alt="" class="brand_logo">
+            <span class="brand_name">LionDen</span>
+          <% end %>
           <%= link_to "Posts", posts_path %>
           <%= link_to "New Post", new_post_path %>
-          <span><%= current_user.name %></span>
-          <%= button_to "Log out", destroy_user_session_path, method: :delete %>
+          <%= render "shared/profile_menu" %>
         </nav>
 
-        <nav aria-label="Categories">
-          <%= link_to "All Posts", posts_path %>
-          <% Post::CATEGORIES.each do |category| %>
-            <%= link_to category, posts_path(category: category) %>
-          <% end %>
-        </nav>
+        <%= render "shared/category_bar" %>
       <% end %>
 
       <%= render "shared/flash" %>

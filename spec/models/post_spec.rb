@@ -116,4 +116,8 @@ RSpec.describe Post, type: :model do
       expect(Time.zone.name).to eq("Eastern Time (US & Canada)")
     end
   end
+
+  it "rejects 'All posts' as a category" do
+    expect(build(:post, category: "All posts")).not_to be_valid
+  end
 end

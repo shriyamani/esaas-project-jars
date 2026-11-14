@@ -26,3 +26,7 @@ end
 Then("no account should exist for {string}") do |email|
   expect(User.exists?(email: email)).to be false
 end
+
+When("I open the profile menu") do
+  find("summary.avatar").click
+end

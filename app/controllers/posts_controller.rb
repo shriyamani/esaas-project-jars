@@ -7,8 +7,16 @@ class PostsController < ApplicationController
   def index
     @posts = Post.active.order(created_at: :desc)
 
-    if Post::CATEGORIES.include?(params[:category])
+    if params[:feed] == "following"
+      followed = current_user.followed_categories
+      @posts = @posts.where(category: followed)
+      @view_title = "Following"
+      @follows_nothing = followed.empty?
+    elsif Post::CATEGORIES.include?(params[:category])
       @posts = @posts.where(category: params[:category])
+      @view_title = params[:category]
+    else
+      @view_title = "All posts"
     end
   end
 

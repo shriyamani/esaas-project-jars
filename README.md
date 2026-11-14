@@ -50,7 +50,7 @@ Clicking on "Posts" in the top left of the page will display a page of all the c
 At the top, you will see all the different categories that posts can be tagged under. The posts page can be filtered
 to only display posts under a specific category by clicking on the category.
 
-> - All Posts 
+> - All posts 
 > - Social 
 > - Academics 
 > - Housing 

@@ -6,7 +6,8 @@ Feature: Log out and protected pages
   Scenario: Log out
     Given I am logged in as "sm5586@barnard.edu"
     And I am on the home page
-    When I press "Log out"
+    When I open the profile menu
+    And I press "Log out"
     Then I should be on the log in page
 
   Scenario: Logged-out users are redirected to log in page

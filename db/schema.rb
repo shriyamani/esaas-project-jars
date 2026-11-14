@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_09_230000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_14_000253) do
+  create_table "category_follows", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "category"], name: "index_category_follows_on_user_id_and_category", unique: true
+    t.index ["user_id"], name: "index_category_follows_on_user_id"
+  end
+
   create_table "posts", force: :cascade do |t|
     t.string "title", null: false
     t.text "body"
@@ -44,6 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_09_230000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "category_follows", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "replies", "posts"
   add_foreign_key "replies", "users"
