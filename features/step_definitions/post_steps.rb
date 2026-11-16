@@ -2,6 +2,10 @@ When("I select {string} from {string}") do |value, field|
   select value, from: field
 end
 
+When("I choose {string}") do |option|
+  choose option
+end
+
 When("I check {string}") do |field|
   check field
 end

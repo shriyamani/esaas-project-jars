@@ -72,6 +72,30 @@ RSpec.describe Post, type: :model do
       post.valid?
       expect(post.expires_at).to be_within(2.seconds).of(target_time)
     end
+
+    it "saves the chosen preset and rejects unknown ones" do
+      expect(create(:post, expiration_preset: "Tonight").reload.expiration_preset).to eq("Tonight")
+      expect(build(:post, expiration_preset: "Next year")).not_to be_valid
+    end
+
+    it "keeps the expiration when a post is edited without changing its preset" do
+      post = create(:post, expiration_preset: "This week")
+      later = 2.days.from_now.change(usec: 0)
+      post.update_column(:expires_at, later)
+
+      post.update!(title: "New title")
+
+      expect(post.reload.expires_at).to eq(later)
+    end
+
+    it "keeps the exact expiration when the same custom time is resubmitted" do
+      post = create(:post, expires_at: 3.days.from_now.change(sec: 42, usec: 0))
+      original = post.expires_at
+
+      post.update!(expiration_preset: "Custom", custom_expires_at: original.strftime("%Y-%m-%dT%H:%M"))
+
+      expect(post.reload.expires_at).to eq(original)
+    end
   end
 
   describe "#display_author" do

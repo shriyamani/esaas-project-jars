@@ -31,18 +31,17 @@
     <% end %>
 
     <footer class="post_card_footer">
-      <span class="post_card_tag"><%= @post.category %></span>
-      <%= render "posts/like_button", post: @post %>
-      <span class="post_card_replies">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-          <path d="M4 4h16v12H8l-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        </svg>
-        <%= pluralize(@replies_total, "reply") %>
-      </span>
-      <time class="post_card_expires" datetime="<%= @post.expires_at.iso8601 %>"
-            title="Expires <%= @post.expires_at.strftime("%B %-d, %Y at %-I:%M %p") %>">
-        Ends in <%= distance_of_time_in_words(Time.current, @post.expires_at) %>
-      </time>
+      <div class="post_card_stats">
+        <span class="post_card_tag"><%= @post.category %></span>
+        <%= render "posts/like_button", post: @post %>
+        <span class="post_card_replies">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <path d="M4 4h16v12H8l-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+          <%= pluralize(@replies_total, "reply") %>
+        </span>
+      </div>
+      <%= render "posts/expiration", expires_at: @post.expires_at %>
     </footer>
   </article>
 

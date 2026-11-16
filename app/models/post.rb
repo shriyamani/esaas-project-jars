@@ -5,7 +5,7 @@ class Post < ApplicationRecord
   TRENDING_LIKE_WEIGHT = 1
   TRENDING_REPLY_WEIGHT = 2
 
-  attr_accessor :expiration_preset, :custom_expires_at
+  attr_accessor :custom_expires_at
 
   has_many :replies, dependent: :destroy
   has_many :likes, dependent: :destroy
@@ -18,6 +18,7 @@ class Post < ApplicationRecord
   validates :category, presence: true, inclusion: { in: CATEGORIES }
   validates :expires_at, presence: true
   validate :expires_at_must_be_in_the_future, if: -> { expires_at.present? && expires_at_changed? }
+  validates :expiration_preset, inclusion: { in: EXPIRATION_PRESETS }, allow_nil: true
 
   scope :active, -> { where("expires_at > ?", Time.current) }
   scope :newest_first, -> { order(created_at: :desc, id: :desc) }
@@ -55,14 +56,18 @@ class Post < ApplicationRecord
   def apply_expiration_preset
     case expiration_preset
     when "Tonight"
-      self.expires_at = Time.current.end_of_day
+      self.expires_at = Time.current.end_of_day if preset_newly_chosen?
     when "This week"
-      self.expires_at = Time.current.end_of_week
+      self.expires_at = Time.current.end_of_week if preset_newly_chosen?
     when "Custom"
-      if custom_expires_at.present?
-        parsed = custom_expires_at.respond_to?(:in_time_zone) ? custom_expires_at.in_time_zone : Time.zone.parse(custom_expires_at.to_s)
-        self.expires_at = parsed if parsed
-      end
+      return if custom_expires_at.blank?
+
+      parsed = custom_expires_at.respond_to?(:in_time_zone) ? custom_expires_at.in_time_zone : Time.zone.parse(custom_expires_at.to_s)
+      self.expires_at = parsed if parsed && parsed.change(sec: 0) != expires_at&.change(sec: 0)
     end
+  end
+  
+  def preset_newly_chosen?
+    new_record? || will_save_change_to_expiration_preset?
   end
 end

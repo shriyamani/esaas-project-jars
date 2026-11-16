@@ -41,7 +41,7 @@ class PostsController < ApplicationController
   end
 
   def new
-    @post = current_user.posts.build
+    @post = current_user.posts.build()
   end
 
   def create
@@ -54,6 +54,8 @@ class PostsController < ApplicationController
   end
 
   def edit
+    @post.expiration_preset ||= "Custom"
+    @post.custom_expires_at ||= @post.expires_at
   end
 
   def update
