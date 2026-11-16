@@ -5,13 +5,13 @@ Feature: Replies on posts
 
   Scenario: Reply to a post
     When I open the discussion
-    And I fill in "Write a reply" with "I can help!"
+    And I write the reply "I can help!"
     And I press "Post Reply"
     Then the discussion replies include "I can help!"
 
   Scenario: Cannot reply after expiration
     When I open the discussion
-    And I fill in "Write a reply" with "Too late"
+    And I write the reply "Too late"
     And the discussion has expired
     And I press "Post Reply"
     Then I should see "This post has expired."
@@ -19,7 +19,7 @@ Feature: Replies on posts
 
   Scenario: The post author sees anonymous replies
     When I open the discussion
-    And I fill in "Write a reply" with "An anonymous suggestion"
+    And I write the reply "An anonymous suggestion"
     And I check "Reply anonymously"
     And I press "Post Reply"
     And I am logged in as "author@barnard.edu"
@@ -29,17 +29,17 @@ Feature: Replies on posts
 
   Scenario: Edit my reply
     When I open the discussion
-    And I fill in "Write a reply" with "Original suggestion"
+    And I write the reply "Original suggestion"
     And I press "Post Reply"
     And I edit my reply
-    And I fill in "Write a reply" with "Updated suggestion"
+    And I write the reply "Updated suggestion"
     And I press "Save Reply"
     Then the discussion replies include "Updated suggestion"
     And I should not see "Original suggestion"
 
   Scenario: Delete my reply
     When I open the discussion
-    And I fill in "Write a reply" with "Remove this suggestion"
+    And I write the reply "Remove this suggestion"
     And I press "Post Reply"
     And I delete my reply
     Then I should see "Reply deleted successfully."

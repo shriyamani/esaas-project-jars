@@ -287,8 +287,8 @@ RSpec.describe "Posts", type: :request do
 
     it "keeps the My Posts filter when sorting" do
       get posts_path, params: { feed: "mine" }
-      sort_link = response.parsed_body.css(".feed_sort a").find { |a| a.text.strip == "Most replies" }
-      expect(sort_link["href"]).to eq(posts_path(feed: "mine", sort: "replies"))
+      sort_link = response.parsed_body.css(".feed_sort a").find { |a| a.text.strip == "Trending" }
+      expect(sort_link["href"]).to eq(posts_path(feed: "mine", sort: "trending"))
     end
 
     it "marks My Posts as current and links it back to All posts" do
@@ -306,12 +306,12 @@ RSpec.describe "Posts", type: :request do
       response.parsed_body.css(".post_card_title").map { |node| node.text.strip }
     end
 
-    it "sorts by most replies when asked" do
+    it "sorts by trending when asked" do
       busy = create(:post, user: author, title: "Busy Post", category: "Social")
       busy.update_column(:created_at, 2.days.ago)
       create_list(:reply, 2, post: busy)
 
-      get posts_path, params: { sort: "replies" }
+      get posts_path, params: { sort: "trending" }
 
       expect(card_titles.first).to eq("Busy Post")
     end
@@ -329,7 +329,7 @@ RSpec.describe "Posts", type: :request do
     it "keeps the category filter while sorting" do
       create(:post, user: author, title: "Social Post", category: "Social")
 
-      get posts_path, params: { category: "Housing", sort: "replies" }
+      get posts_path, params: { category: "Housing", sort: "trending" }
 
       expect(card_titles).to eq([ "Original Title" ])
     end
@@ -337,8 +337,8 @@ RSpec.describe "Posts", type: :request do
     it "keeps the current filter in the sort links" do
       get posts_path, params: { category: "Housing" }
 
-      link = response.parsed_body.css(".feed_sort_option").find { |a| a.text.strip == "Most replies" }
-      expect(link["href"]).to eq(posts_path(category: "Housing", sort: "replies"))
+      link = response.parsed_body.css(".feed_sort_option").find { |a| a.text.strip == "Trending" }
+      expect(link["href"]).to eq(posts_path(category: "Housing", sort: "trending"))
     end
 
     it "shows the reply count on each card" do
@@ -365,8 +365,43 @@ RSpec.describe "Posts", type: :request do
       get posts_path
 
       cards = response.parsed_body.css(".post_card")
-      expect(cards.text).not_to include("Edit")
-      expect(cards.css("form, button")).to be_empty
+      expect(cards.text).not_to include("Edit", "Delete")
+      expect(cards.css("button").map { |b| b["aria-label"] }).to all(match(/\A(Like|Unlike) /))
+    end
+
+    it "shows the like count and whether I liked each card" do
+      create(:like, post: post_record, user: other_user)
+
+      get posts_path
+
+      button = response.parsed_body.at_css(".post_card .like_button")
+      expect(button.at_css(".like_count").text).to eq("1")
+      expect(button["aria-label"]).to eq("Unlike Original Title")
+    end
+  end
+
+  describe "main navigation" do
+    before { sign_in other_user }
+
+    def home_link
+      response.parsed_body.at_css("a.nav_icon[aria-label='Home']")
+    end
+
+    it "marks the Home icon as current only on the unfiltered feed" do
+      get posts_path
+      expect(home_link["href"]).to eq(root_path)
+      expect(home_link["aria-current"]).to eq("page")
+
+      get posts_path, params: { category: "Housing" }
+      expect(home_link["aria-current"]).to be_nil
+    end
+
+    it "shows the signed-in user's name and email in the profile menu" do
+      get posts_path
+
+      menu = response.parsed_body.at_css(".profile_menu")
+      expect(menu.at_css("summary.avatar").text.strip).to eq("O")
+      expect(menu.text).to include("Other User", "other@barnard.edu")
     end
   end
 end

@@ -7,6 +7,7 @@ Given("the discussion has expired") do
 end
 
 When("I open the discussion") { visit post_path(@discussion) }
+When("I write the reply {string}") { |text| fill_in "reply[body]", with: text }
 When("I open the post feed") { visit posts_path }
 
 Then("the discussion replies include {string}") do |body|
