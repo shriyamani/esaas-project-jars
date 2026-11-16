@@ -5,19 +5,29 @@ class PostsController < ApplicationController
 
   # allows users to view posts under specific categories, only from predefined categories in the Post model
   def index
-    @posts = Post.active.order(created_at: :desc)
+    @posts = Post.active.preload(:user, :replies)
+    @filter_params = {}
 
     if params[:feed] == "following"
       followed = current_user.followed_categories
       @posts = @posts.where(category: followed)
       @view_title = "Following"
       @follows_nothing = followed.empty?
+      @filter_params = { feed: "following" }
+    elsif params[:feed] == "mine"
+      @posts = @posts.where(user: current_user)
+      @view_title = "My Posts"
+      @filter_params = { feed: "mine" }
     elsif Post::CATEGORIES.include?(params[:category])
       @posts = @posts.where(category: params[:category])
       @view_title = params[:category]
+      @filter_params = { category: params[:category] }
     else
       @view_title = "All posts"
     end
+
+    @sort = params[:sort] == "replies" ? "replies" : "newest"
+    @posts = @sort == "replies" ? @posts.by_reply_count : @posts.newest_first
   end
 
   def show

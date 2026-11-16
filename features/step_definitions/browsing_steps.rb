@@ -26,6 +26,17 @@ Given("an expired post exists with title {string} in category {string}") do |tit
   post.update_column(:expires_at, 1.day.ago)
 end
 
+Given("another user has an active post with title {string} in category {string}") do |title, category|
+  create(
+    :post,
+    title: title,
+    body: "Details for #{title}",
+    category: category,
+    user: create(:user),
+    expires_at: 3.days.from_now
+  )
+end
+
 Given("I am following the {string} category") do |category|
   User.find_by!(email: "student@columbia.edu").category_follows.create!(category: category)
 end

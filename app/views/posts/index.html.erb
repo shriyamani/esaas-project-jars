@@ -1,9 +1,13 @@
 <div class="feed_header">
   <h1><%= @view_title %></h1>
-</div>
-
-<div>
-  <%= link_to "New Post", new_post_path %>
+  <nav class="feed_sort" aria-label="Sort posts">
+    <%= link_to "Newest", posts_path(@filter_params),
+          class: "feed_sort_option",
+          aria: { current: (@sort == "newest" ? "true" : nil) } %>
+    <%= link_to "Most replies", posts_path(@filter_params.merge(sort: "replies")),
+          class: "feed_sort_option",
+          aria: { current: (@sort == "replies" ? "true" : nil) } %>
+  </nav>
 </div>
 
 <div id="posts">
@@ -19,24 +23,13 @@
         <% end %>
       </div>
     </div>
+  <% elsif @posts.empty? && params[:feed] == "mine" %>
+    <p class="feed_empty">You don't have any active posts yet.</p>
   <% elsif @posts.empty? %>
-    <p><%= params[:feed] == "following" ? "No active posts in the categories you follow." : "No active posts found." %></p>
+    <p class="feed_empty"><%= params[:feed] == "following" ? "No active posts in the categories you follow." : "No active posts found." %></p>
   <% else %>
-    <% @posts.each do |post| %>
-      <div id="<%= dom_id(post) %>" class="post-card">
-        <h2><%= link_to post.title, post_path(post) %></h2>
-        <p><strong>Category:</strong> <%= post.category %></p>
-        <p><strong>Author:</strong> <span class="author-name"><%= post.display_author %></span></p>
-        <p><strong>Expires at:</strong> <%= post.expires_at.strftime("%B %d, %Y %I:%M %p") if post.expires_at %></p>
-        <p><%= truncate(post.body, length: 150) %></p>
-        <div>
-          <%= link_to "View", post_path(post) %>
-          <% if post.user == current_user %>
-            <%= link_to "Edit", edit_post_path(post) %>
-            <%= button_to "Delete", post_path(post), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
+    <div class="post_grid">
+      <%= render partial: "posts/post_card", collection: @posts, as: :post %>
+    </div>
   <% end %>
 </div>

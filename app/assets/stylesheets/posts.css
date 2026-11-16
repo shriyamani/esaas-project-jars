@@ -1,0 +1,152 @@
+.feed_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.feed_header h1 {
+  margin: 0;
+  color: #012169;
+}
+
+.feed_sort {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  background: #ffffff;
+  border: 2px solid #012169;
+}
+
+.feed_sort_option {
+  padding: 0.35rem 0.9rem;
+  color: #012169;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.feed_sort_option:hover { 
+  background: #bdd1ff; 
+}
+
+.feed_sort_option[aria-current="true"] {
+  background: #012169;
+  color: #ffffff;
+}
+
+.post_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.post_card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1rem;
+  background: #ffffff;
+  border: 2px solid #012169;
+  border-radius: 0.4rem;
+}
+
+.post_card_header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.post_card_avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: #012169;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.post_card_meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.post_card_author {
+  font-weight: 600;
+  white-space: normal;
+}
+
+.post_card_time {
+  font-size: 0.8rem;
+}
+
+.post_card_arrow {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post_card_title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.post_card_link {
+  color: inherit;
+  text-decoration: none;
+}
+.post_card_link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.post_card:hover {
+  background: #f5f9fd;
+}
+
+.post_card_body {
+  margin: 0;
+  color: #333333;
+  font-size: 0.95rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post_card_footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 2px solid #e6eef8;
+  font-size: 0.9rem;
+}
+
+.post_card_tag {
+  padding: 0.15rem 0.65rem;
+  border-radius: 0.3rem;
+  background: #6CACE4;
+  font-weight: 600;
+}
+
+.post_card_replies {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.post_card_expires {
+  margin-left: auto;
+  opacity: 0.7;
+}

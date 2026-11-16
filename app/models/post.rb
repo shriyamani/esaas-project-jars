@@ -16,6 +16,12 @@ class Post < ApplicationRecord
   validate :expires_at_must_be_in_the_future, if: -> { expires_at.present? && expires_at_changed? }
 
   scope :active, -> { where("expires_at > ?", Time.current) }
+  scope :newest_first, -> { order(created_at: :desc, id: :desc) }
+  scope :by_reply_count, -> {
+    left_joins(:replies)
+      .group(:id)
+      .order(Arel.sql("COUNT(replies.id) DESC"), created_at: :desc, id: :desc)
+  }
 
   def display_author
     anonymous? ? "Anonymous" : user&.name

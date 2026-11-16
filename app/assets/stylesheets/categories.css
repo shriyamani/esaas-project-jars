@@ -54,6 +54,10 @@ a.category_tab[aria-current="page"] {
   background: #6CACE4;
 }
 
+.my_posts_tab {
+  margin-left: auto;
+}
+
 .category_divider {
   width: 2px;
   background: #012169;

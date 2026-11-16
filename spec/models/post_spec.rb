@@ -120,4 +120,41 @@ RSpec.describe Post, type: :model do
   it "rejects 'All posts' as a category" do
     expect(build(:post, category: "All posts")).not_to be_valid
   end
+
+  describe ".newest_first" do
+    it "orders posts newest first" do
+      older = create(:post, title: "Older")
+      older.update_column(:created_at, 2.days.ago)
+      newer = create(:post, title: "Newer")
+
+      expect(Post.newest_first.to_a).to eq([ newer, older ])
+    end
+  end
+
+  describe ".by_reply_count" do
+    it "orders posts by number of replies, most first, including posts with none" do
+      quiet = create(:post, title: "Quiet")
+      busy = create(:post, title: "Busy")
+      medium = create(:post, title: "Medium")
+      create_list(:reply, 3, post: busy)
+      create(:reply, post: medium)
+
+      expect(Post.by_reply_count.to_a).to eq([ busy, medium, quiet ])
+    end
+
+    it "breaks ties by showing the newest post first" do
+      older = create(:post, title: "Older")
+      older.update_column(:created_at, 2.days.ago)
+      newer = create(:post, title: "Newer")
+
+      expect(Post.by_reply_count.to_a).to eq([ newer, older ])
+    end
+
+    it "combines with the active scope and category filters" do
+      housing = create(:post, category: "Housing")
+      create(:post, category: "Social")
+
+      expect(Post.active.where(category: "Housing").by_reply_count.to_a).to eq([ housing ])
+    end
+  end
 end
