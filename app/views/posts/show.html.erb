@@ -8,6 +8,8 @@
     <%= simple_format(@post.body) %>
   </div>
 
+  <%= render "posts/like_button", post: @post %>
+
   <div>
     <% if @post.user == current_user %>
       <%= link_to "Edit", edit_post_path(@post) %>

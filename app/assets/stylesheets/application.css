@@ -23,6 +23,7 @@ main {
   text-align: center;
   width: 40%;
   margin: 0 auto;
+  max-height: 10rem;
 }
 
 .flash_banner--alert {
@@ -35,4 +36,18 @@ main {
   background: #e7f6ec;
   color: #1e6b3a;
   border: 1px solid #b6e2c4;
+  animation: flash-fade-out 0.5s ease 1s forwards;
+  overflow: hidden;
+}
+
+@keyframes flash-fade-out {
+  to {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-width: 0;
+  }
 }

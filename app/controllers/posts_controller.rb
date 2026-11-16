@@ -3,9 +3,8 @@ class PostsController < ApplicationController
   before_action :set_post, only: [ :edit, :update, :destroy ]
   before_action :authorize_author!, only: [ :edit, :update, :destroy ]
 
-  # allows users to view posts under specific categories, only from predefined categories in the Post model
   def index
-    @posts = Post.active.preload(:user, :replies)
+    @posts = Post.active.preload(:user, :replies, :likes)
     @filter_params = {}
 
     if params[:feed] == "following"
@@ -26,8 +25,8 @@ class PostsController < ApplicationController
       @view_title = "All posts"
     end
 
-    @sort = params[:sort] == "replies" ? "replies" : "newest"
-    @posts = @sort == "replies" ? @posts.by_reply_count : @posts.newest_first
+    @sort = params[:sort] == "trending" ? "trending" : "newest"
+    @posts = @sort == "trending" ? @posts.trending : @posts.newest_first
   end
 
   def show

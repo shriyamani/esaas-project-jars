@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :replies, dependent: :destroy
   has_many :posts, dependent: :destroy
   has_many :category_follows, dependent: :destroy
+  has_many :likes, dependent: :destroy
 
   def followed_categories
     category_follows.pluck(:category)

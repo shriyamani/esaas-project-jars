@@ -19,6 +19,7 @@
 
   <footer class="post_card_footer">
     <span class="post_card_tag"><%= post.category %></span>
+    <%= render "posts/like_button", post: post %>
     <span class="post_card_replies">
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
         <path d="M4 4h16v12H8l-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
