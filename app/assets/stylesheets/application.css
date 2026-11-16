@@ -30,6 +30,8 @@ main {
   background: #fdecec;
   color: #a12828;
   border: 1px solid #f3b9b9;
+  animation: flash-fade-out 0.5s ease 1s forwards;
+  overflow: hidden;
 }
 
 .flash_banner--notice {

@@ -1,12 +1,28 @@
-<div id="<%= dom_id(reply) %>">
-  <p><strong><%= reply.display_author %></strong></p>
-  <p><%= time_ago_in_words(reply.created_at) %> ago</p>
-  <p><%= reply.body %></p>
-  <% if reply.user == current_user %>
-    <div>
-      <%= link_to "Edit", edit_post_reply_path(reply.post, reply) %>
-      <%= button_to "Delete", post_reply_path(reply.post, reply), method: :delete,
-            data: { turbo_confirm: "Delete this reply?" } %>
+<div id="<%= dom_id(reply) %>" class="reply">
+  <span class="reply_avatar" aria-hidden="true">
+    <%= reply.anonymous? ? "?" : reply.display_author.to_s.first.to_s.upcase %>
+  </span>
+
+  <div class="reply_content">
+    <div class="reply_meta">
+      <strong class="reply_author"><%= reply.display_author %></strong>
+      <%# Only label the author when neither post nor reply is anonymous, so the badge never reveals identity %>
+      <% if reply.user_id == reply.post.user_id && !reply.anonymous? && !reply.post.anonymous? %>
+        <span class="reply_badge">Author</span>
+      <% end %>
+      <span class="reply_time"><%= time_ago_in_words(reply.created_at) %> ago</span>
+
+      <% if reply.user == current_user %>
+        <div class="reply_actions">
+          <%= link_to "Edit", edit_post_reply_path(reply.post, reply), class: "text_action" %>
+          <%= button_to "Delete", post_reply_path(reply.post, reply), method: :delete,
+                class: "text_action text_action--danger",
+                form: { class: "inline_form" },
+                data: { turbo_confirm: "Delete this reply?" } %>
+        </div>
+      <% end %>
     </div>
-  <% end %>
+
+    <div class="reply_body"><%= simple_format(reply.body) %></div>
+  </div>
 </div>

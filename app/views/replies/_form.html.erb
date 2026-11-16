@@ -1,6 +1,9 @@
-<%= form_with(model: [post, local_assigns.fetch(:reply) { Reply.new }]) do |form| %>
+<% show_label = local_assigns.fetch(:show_label, true) %>
+<% cancel_path = local_assigns[:cancel_path] %>
+
+<%= form_with(model: [post, local_assigns.fetch(:reply) { Reply.new }], class: "reply_form") do |form| %>
   <% if form.object.errors.any? %>
-    <div id="error_explanation">
+    <div id="error_explanation" class="form_errors">
       <h2><%= pluralize(form.object.errors.count, "error") %> prohibited this reply from being saved:</h2>
       <ul>
         <% form.object.errors.full_messages.each do |message| %>
@@ -9,19 +12,22 @@
       </ul>
     </div>
   <% end %>
-  <div>
-    <%= form.label :body, "Write a reply" %>
-    <%= form.text_area :body, maxlength: 2000 %>
-  </div>
 
-  <div>
-    <%= form.label :anonymous do %>
+  <%= form.text_area :body, maxlength: 2000, rows: local_assigns.fetch(:rows, 3),
+        class: "reply_form_input",
+        placeholder: "Share info, ask a question, or offer to help…" %>
+
+  <div class="reply_form_footer">
+    <%= form.label :anonymous, class: "reply_form_checkbox" do %>
       <%= form.check_box :anonymous %>
       Reply anonymously
     <% end %>
-  </div>
 
-  <div>
-    <%= form.submit(form.object.persisted? ? "Save Reply" : "Post Reply") %>
+    <div class="reply_form_buttons">
+      <% if cancel_path %>
+        <%= link_to "Cancel", cancel_path, class: "secondary_button" %>
+      <% end %>
+      <%= form.submit(form.object.persisted? ? "Save Reply" : "Post Reply", class: "primary_button") %>
+    </div>
   </div>
 <% end %>

@@ -1,28 +1,84 @@
-<div>
-  <h1><%= @post.title %></h1>
-  <p><strong>Category:</strong> <%= @post.category %></p>
-  <p><strong>Author:</strong> <span class="author-name"><%= @post.display_author %></span></p>
-  <p><strong>Expires at:</strong> <%= @post.expires_at.strftime("%B %d, %Y %I:%M %p") if @post.expires_at %></p>
+<div class="post_page">
+  <%= link_to posts_path, class: "back_link" do %>
+    <span aria-hidden="true">←</span> Back to posts
+  <% end %>
 
-  <div>
-    <%= simple_format(@post.body) %>
-  </div>
+  <article class="post_detail">
+    <header class="post_detail_header">
+      <span class="post_card_avatar" aria-hidden="true">
+        <%= @post.anonymous? ? "?" : @post.display_author.to_s.first.to_s.upcase %>
+      </span>
+      <div class="post_card_meta">
+        <span class="post_card_author author-name"><%= @post.display_author %></span>
+        <span class="post_card_time"><%= time_ago_in_words(@post.created_at) %> ago</span>
+      </div>
 
-  <%= render "posts/like_button", post: @post %>
+      <% if @post.user == current_user %>
+        <div class="post_detail_actions">
+          <%= link_to "Edit", edit_post_path(@post), class: "small_button" %>
+          <%= button_to "Delete", post_path(@post), method: :delete,
+                class: "small_button small_button--danger",
+                form: { class: "inline_form" },
+                data: { turbo_confirm: "Delete this post?" } %>
+        </div>
+      <% end %>
+    </header>
 
-  <div>
-    <% if @post.user == current_user %>
-      <%= link_to "Edit", edit_post_path(@post) %>
-      <%= button_to "Delete", post_path(@post), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
+    <h1 class="post_detail_title"><%= @post.title %></h1>
+
+    <% if @post.body.present? %>
+      <div class="post_detail_body"><%= simple_format(@post.body) %></div>
     <% end %>
-    <%= link_to "Back to posts", posts_path %>
-  </div>
-</div>
 
-<div>
-  <h2>Replies</h2>
-  <div id="replies">
-    <%= render @post.replies.includes(:user).order(:created_at, :id) %>
-  </div>
-  <%= render "replies/form", post: @post %>
+    <footer class="post_card_footer">
+      <span class="post_card_tag"><%= @post.category %></span>
+      <%= render "posts/like_button", post: @post %>
+      <span class="post_card_replies">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path d="M4 4h16v12H8l-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <%= pluralize(@replies_total, "reply") %>
+      </span>
+      <time class="post_card_expires" datetime="<%= @post.expires_at.iso8601 %>"
+            title="Expires <%= @post.expires_at.strftime("%B %-d, %Y at %-I:%M %p") %>">
+        Ends in <%= distance_of_time_in_words(Time.current, @post.expires_at) %>
+      </time>
+    </footer>
+  </article>
+
+    <section class="replies_section" aria-labelledby="replies_heading">
+      <h2 id="replies_heading">Replies <span class="replies_count">(<%= @replies_total %>)</span></h2>
+
+      <div class="reply_composer">
+        <%= render "replies/form", post: @post %>
+      </div>
+
+      <div id="replies" class="reply_list">
+        <% if @replies_total.zero? %>
+          <p class="replies_empty">No replies yet. Be the first to say something.</p>
+        <% else %>
+          <%= render @replies %>
+
+          <% if @hidden_replies_count.positive? %>
+            <%= link_to post_path(@post, replies: "all", anchor: dom_id(@first_hidden_reply)),
+                  class: "show_replies_toggle", aria: { expanded: false, controls: "replies" } do %>
+              Show <%= pluralize(@hidden_replies_count, "older reply", plural: "older replies") %>
+              <svg class="show_replies_chevron" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            <% end %>
+          <% elsif @replies_total > PostsController::REPLIES_PREVIEW_COUNT %>
+            <%= link_to post_path(@post, anchor: "replies_heading"),
+                  class: "show_replies_toggle", aria: { expanded: true, controls: "replies" } do %>
+              Show fewer replies
+              <svg class="show_replies_chevron is-up" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
 </div>

@@ -1,4 +1,6 @@
 class PostsController < ApplicationController
+  REPLIES_PREVIEW_COUNT = 5
+
   before_action :set_active_post, only: [ :show ]
   before_action :set_post, only: [ :edit, :update, :destroy ]
   before_action :authorize_author!, only: [ :edit, :update, :destroy ]
@@ -30,6 +32,12 @@ class PostsController < ApplicationController
   end
 
   def show
+    all_replies = @post.replies.includes(:user).order(created_at: :desc, id: :desc).to_a
+    @replies_total = all_replies.size
+    @showing_all_replies = params[:replies] == "all" || @replies_total <= REPLIES_PREVIEW_COUNT
+    @replies = @showing_all_replies ? all_replies : all_replies.first(REPLIES_PREVIEW_COUNT)
+    @hidden_replies_count = @replies_total - @replies.size
+    @first_hidden_reply = all_replies[REPLIES_PREVIEW_COUNT] unless @showing_all_replies
   end
 
   def new
