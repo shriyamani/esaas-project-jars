@@ -120,4 +120,72 @@ RSpec.describe Post, type: :model do
   it "rejects 'All posts' as a category" do
     expect(build(:post, category: "All posts")).not_to be_valid
   end
+
+  describe ".newest_first" do
+    it "orders posts newest first" do
+      older = create(:post, title: "Older")
+      older.update_column(:created_at, 2.days.ago)
+      newer = create(:post, title: "Newer")
+
+      expect(Post.newest_first.to_a).to eq([ newer, older ])
+    end
+  end
+
+  describe ".trending" do
+    it "ranks posts by recent activity, with a reply worth two likes" do
+      quiet = create(:post, title: "Quiet")
+      liked = create(:post, title: "Liked")
+      replied = create(:post, title: "Replied")
+      create(:like, post: liked)
+      create(:reply, post: replied)
+
+      expect(Post.trending.to_a).to eq([ replied, liked, quiet ])
+    end
+
+    it "ignores likes and replies from the post's own author" do
+      own_activity = create(:post, title: "Own activity")
+      create(:like, post: own_activity, user: own_activity.user)
+      create(:reply, post: own_activity, user: own_activity.user)
+      liked_by_other = create(:post, title: "Liked by other")
+      liked_by_other.update_column(:created_at, 1.day.ago)
+      create(:like, post: liked_by_other)
+
+      expect(Post.trending.first).to eq(liked_by_other)
+    end
+
+    it "ignores activity older than the trending window" do
+      old_buzz = create(:post, title: "Old buzz")
+      old_buzz.update_column(:created_at, 1.day.ago)
+      create(:reply, post: old_buzz).update_column(:created_at, 3.days.ago)
+      fresh = create(:post, title: "Fresh")
+
+      expect(Post.trending.to_a).to eq([ fresh, old_buzz ])
+    end
+
+    it "breaks ties by showing the newest post first" do
+      older = create(:post, title: "Older")
+      older.update_column(:created_at, 2.days.ago)
+      newer = create(:post, title: "Newer")
+
+      expect(Post.trending.to_a).to eq([ newer, older ])
+    end
+
+    it "combines with the active scope and category filters" do
+      housing = create(:post, category: "Housing")
+      create(:post, category: "Social")
+
+      expect(Post.active.where(category: "Housing").trending.to_a).to eq([ housing ])
+    end
+  end
+
+  describe "#liked_by?" do
+    it "is true only for users who liked the post" do
+      post = create(:post)
+      fan = create(:user)
+      create(:like, post: post, user: fan)
+
+      expect(post.liked_by?(fan)).to be true
+      expect(post.liked_by?(create(:user))).to be false
+    end
+  end
 end

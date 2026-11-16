@@ -36,9 +36,23 @@
             <img src="/icon.png" alt="" class="brand_logo">
             <span class="brand_name">LionDen</span>
           <% end %>
-          <%= link_to "Posts", posts_path %>
-          <%= link_to "New Post", new_post_path %>
-          <%= render "shared/profile_menu" %>
+
+          <div class="nav_actions">
+            <% home_active = controller_name == "posts" && action_name == "index" &&
+                            params[:category].blank? && params[:feed].blank? %>
+            <%= link_to root_path, class: "nav_icon", title: "Home",
+                  aria: { label: "Home", current: (home_active ? "page" : nil) } do %>
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                <path d="M3 11.5 12 4l9 7.5M5.5 9.5V20h5v-5.5h3V20h5V9.5"
+                      fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            <% end %>
+
+            <%# Notification bell goes here %>
+
+            <%= render "shared/profile_menu" %>
+          </div>
         </nav>
 
         <%= render "shared/category_bar" %>

@@ -1,0 +1,31 @@
+<article id="<%= dom_id(post) %>" class="post_card">
+  <header class="post_card_header">
+    <span class="post_card_avatar" aria-hidden="true">
+      <%= post.anonymous? ? "?" : post.display_author.to_s.first.to_s.upcase %>
+    </span>
+    <div class="post_card_meta">
+      <span class="post_card_author"><%= post.display_author %></span>
+      <span class="post_card_time"><%= time_ago_in_words(post.created_at) %> ago</span>
+    </div>
+    <span class="post_card_arrow" aria-hidden="true">↗</span>
+  </header>
+
+  <%# The title link stretches over the whole card, so clicking anywhere opens the post %>
+  <h2 class="post_card_title"><%= link_to post.title, post_path(post), class: "post_card_link" %></h2>
+
+  <% if post.body.present? %>
+    <p class="post_card_body"><%= truncate(post.body, length: 140) %></p>
+  <% end %>
+
+  <footer class="post_card_footer">
+    <span class="post_card_tag"><%= post.category %></span>
+    <%= render "posts/like_button", post: post %>
+    <span class="post_card_replies">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <path d="M4 4h16v12H8l-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      </svg>
+      <%= pluralize(post.replies.size, "reply") %>
+    </span>
+    <span class="post_card_expires">Ends in <%= distance_of_time_in_words(Time.current, post.expires_at) %></span>
+  </footer>
+</article>

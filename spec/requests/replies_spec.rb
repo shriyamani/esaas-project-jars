@@ -51,6 +51,34 @@ RSpec.describe "Replies", type: :request do
       create(:reply, post: post_record, user: reader)
       expect { post_record.destroy! }.to change(Reply, :count).by(-1)
     end
+
+    it "says when a post has no replies yet" do
+      get post_path(post_record)
+      expect(response.body).to include("No replies yet.")
+    end
+
+    it "shows the 5 newest replies and links to the older ones" do
+      (1..6).each { |n| create(:reply, post: post_record, body: "Reply #{n}") }
+
+      get post_path(post_record)
+      replies = response.parsed_body.at_css("#replies").text
+      expect(replies).to include("Reply 6", "Reply 2", "Show 1 older reply")
+      expect(replies).not_to include("Reply 1")
+
+      get post_path(post_record, replies: "all")
+      replies = response.parsed_body.at_css("#replies").text
+      expect(replies).to include("Reply 1", "Show fewer replies")
+    end
+
+    it "labels the post author's replies unless they are anonymous" do
+      create(:reply, post: post_record, user: post_record.user, body: "From the author")
+      create(:reply, post: post_record, user: post_record.user, body: "Hidden author", anonymous: true)
+
+      get post_path(post_record)
+
+      badges = response.parsed_body.css(".reply").select { |r| r.at_css(".reply_badge") }
+      expect(badges.map { |r| r.at_css(".reply_body").text.strip }).to eq([ "From the author" ])
+    end
   end
   describe "managing existing replies" do
     let!(:reply) { create(:reply, post: post_record, user: reader, body: "Original", anonymous: true) }

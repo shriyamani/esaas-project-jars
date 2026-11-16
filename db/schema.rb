@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_14_000253) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_011329) do
   create_table "category_follows", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "category", null: false
@@ -18,6 +18,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_000253) do
     t.datetime "updated_at", null: false
     t.index ["user_id", "category"], name: "index_category_follows_on_user_id_and_category", unique: true
     t.index ["user_id"], name: "index_category_follows_on_user_id"
+  end
+
+  create_table "likes", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "post_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_likes_on_post_id"
+    t.index ["user_id", "post_id"], name: "index_likes_on_user_id_and_post_id", unique: true
+    t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -54,6 +64,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_000253) do
   end
 
   add_foreign_key "category_follows", "users"
+  add_foreign_key "likes", "posts"
+  add_foreign_key "likes", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "replies", "posts"
   add_foreign_key "replies", "users"

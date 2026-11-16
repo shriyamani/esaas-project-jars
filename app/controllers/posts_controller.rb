@@ -1,26 +1,43 @@
 class PostsController < ApplicationController
+  REPLIES_PREVIEW_COUNT = 5
+
   before_action :set_active_post, only: [ :show ]
   before_action :set_post, only: [ :edit, :update, :destroy ]
   before_action :authorize_author!, only: [ :edit, :update, :destroy ]
 
-  # allows users to view posts under specific categories, only from predefined categories in the Post model
   def index
-    @posts = Post.active.order(created_at: :desc)
+    @posts = Post.active.preload(:user, :replies, :likes)
+    @filter_params = {}
 
     if params[:feed] == "following"
       followed = current_user.followed_categories
       @posts = @posts.where(category: followed)
       @view_title = "Following"
       @follows_nothing = followed.empty?
+      @filter_params = { feed: "following" }
+    elsif params[:feed] == "mine"
+      @posts = @posts.where(user: current_user)
+      @view_title = "My Posts"
+      @filter_params = { feed: "mine" }
     elsif Post::CATEGORIES.include?(params[:category])
       @posts = @posts.where(category: params[:category])
       @view_title = params[:category]
+      @filter_params = { category: params[:category] }
     else
       @view_title = "All posts"
     end
+
+    @sort = params[:sort] == "trending" ? "trending" : "newest"
+    @posts = @sort == "trending" ? @posts.trending : @posts.newest_first
   end
 
   def show
+    all_replies = @post.replies.includes(:user).order(created_at: :desc, id: :desc).to_a
+    @replies_total = all_replies.size
+    @showing_all_replies = params[:replies] == "all" || @replies_total <= REPLIES_PREVIEW_COUNT
+    @replies = @showing_all_replies ? all_replies : all_replies.first(REPLIES_PREVIEW_COUNT)
+    @hidden_replies_count = @replies_total - @replies.size
+    @first_hidden_reply = all_replies[REPLIES_PREVIEW_COUNT] unless @showing_all_replies
   end
 
   def new

@@ -250,4 +250,158 @@ RSpec.describe "Posts", type: :request do
       expect(link["href"]).to eq(posts_path)
     end
   end
+
+  describe "My Posts feed" do
+    before { sign_in author }
+
+    def heading
+      response.parsed_body.at_css("main h1").text.strip
+    end
+
+    it "shows only the current user's posts" do
+      create(:post, user: other_user, title: "Someone Else's Post")
+
+      get posts_path, params: { feed: "mine" }
+
+      expect(heading).to eq("My Posts")
+      expect(response.body).to include("Original Title")
+      expect(response.body).not_to include("Someone Else's Post")
+    end
+
+    it "still shows the user's posts in the main feed and category feeds" do
+      get posts_path
+      expect(response.body).to include("Original Title")
+
+      get posts_path, params: { category: "Housing" }
+      expect(response.body).to include("Original Title")
+    end
+
+    it "does not show the user's expired posts" do
+      post_record.update_column(:expires_at, 1.day.ago)
+
+      get posts_path, params: { feed: "mine" }
+
+      expect(response.body).not_to include("Original Title")
+      expect(response.body).to include("You don't have any active posts yet.")
+    end
+
+    it "keeps the My Posts filter when sorting" do
+      get posts_path, params: { feed: "mine" }
+      sort_link = response.parsed_body.css(".feed_sort a").find { |a| a.text.strip == "Trending" }
+      expect(sort_link["href"]).to eq(posts_path(feed: "mine", sort: "trending"))
+    end
+
+    it "marks My Posts as current and links it back to All posts" do
+      get posts_path, params: { feed: "mine" }
+      link = response.parsed_body.at_css("a.my_posts_tab")
+      expect(link["aria-current"]).to eq("page")
+      expect(link["href"]).to eq(posts_path)
+    end
+  end
+
+  describe "feed cards and sorting" do
+    before { sign_in other_user }
+
+    def card_titles
+      response.parsed_body.css(".post_card_title").map { |node| node.text.strip }
+    end
+
+    it "sorts by trending when asked" do
+      busy = create(:post, user: author, title: "Busy Post", category: "Social")
+      busy.update_column(:created_at, 2.days.ago)
+      create_list(:reply, 2, post: busy)
+
+      get posts_path, params: { sort: "trending" }
+
+      expect(card_titles.first).to eq("Busy Post")
+    end
+
+    it "falls back to newest first for an unknown sort" do
+      post_record.update_column(:created_at, 2.days.ago)
+      create(:post, user: author, title: "Newest Post")
+
+      get posts_path, params: { sort: "bogus" }
+
+      expect(response).to have_http_status(:ok)
+      expect(card_titles.first).to eq("Newest Post")
+    end
+
+    it "keeps the category filter while sorting" do
+      create(:post, user: author, title: "Social Post", category: "Social")
+
+      get posts_path, params: { category: "Housing", sort: "trending" }
+
+      expect(card_titles).to eq([ "Original Title" ])
+    end
+
+    it "keeps the current filter in the sort links" do
+      get posts_path, params: { category: "Housing" }
+
+      link = response.parsed_body.css(".feed_sort_option").find { |a| a.text.strip == "Trending" }
+      expect(link["href"]).to eq(posts_path(category: "Housing", sort: "trending"))
+    end
+
+    it "shows the reply count on each card" do
+      create_list(:reply, 2, post: post_record)
+
+      get posts_path
+
+      expect(response.parsed_body.at_css(".post_card").text).to include("2 replies")
+    end
+
+    it "shows Anonymous instead of the author on anonymous posts" do
+      post_record.update!(anonymous: true)
+
+      get posts_path
+
+      card = response.parsed_body.at_css(".post_card").text
+      expect(card).to include("Anonymous")
+      expect(card).not_to include("Author User")
+    end
+
+    it "does not put edit or delete controls on cards" do
+      sign_in author
+
+      get posts_path
+
+      cards = response.parsed_body.css(".post_card")
+      expect(cards.text).not_to include("Edit", "Delete")
+      expect(cards.css("button").map { |b| b["aria-label"] }).to all(match(/\A(Like|Unlike) /))
+    end
+
+    it "shows the like count and whether I liked each card" do
+      create(:like, post: post_record, user: other_user)
+
+      get posts_path
+
+      button = response.parsed_body.at_css(".post_card .like_button")
+      expect(button.at_css(".like_count").text).to eq("1")
+      expect(button["aria-label"]).to eq("Unlike Original Title")
+    end
+  end
+
+  describe "main navigation" do
+    before { sign_in other_user }
+
+    def home_link
+      response.parsed_body.at_css("a.nav_icon[aria-label='Home']")
+    end
+
+    it "marks the Home icon as current only on the unfiltered feed" do
+      get posts_path
+      expect(home_link["href"]).to eq(root_path)
+      expect(home_link["aria-current"]).to eq("page")
+
+      get posts_path, params: { category: "Housing" }
+      expect(home_link["aria-current"]).to be_nil
+    end
+
+    it "shows the signed-in user's name and email in the profile menu" do
+      get posts_path
+
+      menu = response.parsed_body.at_css(".profile_menu")
+      expect(menu.at_css("summary.avatar").text.strip).to eq("O")
+      expect(menu.text).to include("Other User", "other@barnard.edu")
+    end
+  end
 end

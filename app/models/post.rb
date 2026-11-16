@@ -1,10 +1,14 @@
 class Post < ApplicationRecord
   CATEGORIES = ["Social", "Academics", "Housing", "Buy/Sell", "Travel", "Help" ].freeze
   EXPIRATION_PRESETS = [ "Tonight", "This week", "Custom" ].freeze
+  TRENDING_WINDOW = 48.hours
+  TRENDING_LIKE_WEIGHT = 1
+  TRENDING_REPLY_WEIGHT = 2
 
   attr_accessor :expiration_preset, :custom_expires_at
 
   has_many :replies, dependent: :destroy
+  has_many :likes, dependent: :destroy
 
   belongs_to :user
 
@@ -16,9 +20,30 @@ class Post < ApplicationRecord
   validate :expires_at_must_be_in_the_future, if: -> { expires_at.present? && expires_at_changed? }
 
   scope :active, -> { where("expires_at > ?", Time.current) }
+  scope :newest_first, -> { order(created_at: :desc, id: :desc) }
+  scope :trending, -> {
+    since = TRENDING_WINDOW.ago
+    recent_likes = Like.where("likes.post_id = posts.id")
+                      .where("likes.user_id <> posts.user_id")
+                      .where("likes.created_at > ?", since)
+                      .select("COUNT(*)").to_sql
+    recent_replies = Reply.where("replies.post_id = posts.id")
+                          .where("replies.user_id <> posts.user_id")
+                          .where("replies.created_at > ?", since)
+                          .select("COUNT(*)").to_sql
+
+    order(
+      Arel.sql("(#{TRENDING_LIKE_WEIGHT} * (#{recent_likes}) + #{TRENDING_REPLY_WEIGHT} * (#{recent_replies})) DESC"),
+      created_at: :desc, id: :desc
+    )
+  }
 
   def display_author
     anonymous? ? "Anonymous" : user&.name
+  end
+
+  def liked_by?(user)
+    likes.any? { |like| like.user_id == user.id }
   end
 
   private

@@ -1,5 +1,6 @@
 <% on_feed = controller_name == "posts" && action_name == "index" %>
 <% viewing_following = on_feed && params[:feed] == "following" %>
+<% viewing_mine = on_feed && params[:feed] == "mine" %>
 <% viewing_all = on_feed && params[:feed].blank? && !Post::CATEGORIES.include?(params[:category]) %>
 <% followed_categories = current_user.followed_categories %>
 <% followed, others = Post::CATEGORIES.partition { |c| followed_categories.include?(c) } %>
@@ -37,4 +38,9 @@
       <% end %>
     </div>
   <% end %>
+
+  <%= link_to "My Posts",
+        viewing_mine ? posts_path : posts_path(feed: "mine"),
+        class: "category_tab category_label my_posts_tab",
+        aria: { current: (viewing_mine ? "page" : nil) } %>
 </nav>

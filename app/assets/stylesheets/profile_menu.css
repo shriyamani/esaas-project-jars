@@ -1,7 +1,5 @@
 .profile_menu {
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem
+    position: relative;
 }
 
 .avatar {
@@ -54,7 +52,10 @@
 }
 
 .main_nav {
-  padding: 1rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
 }
 
 .brand {
@@ -73,5 +74,30 @@
 .brand_name {
   font-size: 2.25rem;
   font-weight: 700;
+  color: #012169;
+}
+
+.nav_actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav_icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  color: #012169;
+}
+
+.nav_icon:hover { 
+    background: #a4c7e5; 
+}
+
+.nav_icon[aria-current="page"] {
+  background: transparent;
   color: #012169;
 }
