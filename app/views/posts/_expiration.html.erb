@@ -1,0 +1,9 @@
+<% remaining = time_remaining(expires_at) %>
+<div class="post_expiration" title="Ends <%= expiration_label(expires_at) %> (in <%= remaining %>)">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <time class="post_expiration_date" datetime="<%= expires_at.iso8601 %>">ENDS: <%= expiration_label(expires_at) %></time>
+  <span class="post_expiration_relative">(in <%= remaining %>)</span>
+</div>

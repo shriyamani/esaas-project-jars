@@ -1,6 +1,6 @@
-<%= form_with(model: post) do |form| %>
+<%= form_with(model: post, class: "post_form") do |form| %>
   <% if post.errors.any? %>
-    <div id="error_explanation">
+    <div id="error_explanation" class="form_errors">
       <h2><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
       <ul>
         <% post.errors.full_messages.each do |message| %>
@@ -10,39 +10,56 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :title %>
-    <%= form.text_field :title %>
+  <div class="form_field">
+    <%= form.label :title, class: "form_label" %>
+    <%= form.text_field :title, class: "form_input form_input--title"%>
   </div>
 
-  <div>
-    <%= form.label :body %>
-    <%= form.text_area :body %>
+  <div class="form_field">
+    <%= form.label :body, class: "form_label" %>
+    <%= form.text_area :body, rows: 6, class: "form_input"%>
   </div>
 
-  <div>
-    <%= form.label :category %>
-    <%= form.select :category, Post::CATEGORIES, prompt: "Select a category" %>
-  </div>
+  <fieldset class="form_field">
+    <legend class="form_label">Category</legend>
+    <div class="chip_group">
+      <% Post::CATEGORIES.each do |category| %>
+        <label class="chip">
+          <%= form.radio_button :category, category %>
+          <span><%= category %></span>
+        </label>
+      <% end %>
+    </div>
+  </fieldset>
 
-  <div>
-    <%= form.label :anonymous do %>
+  <fieldset class="form_field">
+    <legend class="form_label">Expires</legend>
+
+    <div class="chip_group">
+      <% Post::EXPIRATION_PRESETS.each do |preset| %>
+        <label class="chip">
+          <%= form.radio_button :expiration_preset, preset %>
+          <span><%= preset %></span>
+        </label>
+      <% end %>
+    </div>
+
+    <div class="expiration_custom">
+      <%= form.label :custom_expires_at, "Custom expiration", class: "form_label form_label--small" %>
+      <%= form.datetime_local_field :custom_expires_at, class: "form_input",
+            min: Time.current.strftime("%Y-%m-%dT%H:%M") %>
+    </div>
+  </fieldset>
+
+  <div class="form_footer">
+    <%= form.label :anonymous, class: "reply_form_checkbox" do %>
       <%= form.check_box :anonymous %>
       Post anonymously
     <% end %>
-  </div>
 
-  <div>
-    <%= form.label :expiration_preset, "Expiration Preset" %>
-    <%= form.select :expiration_preset, Post::EXPIRATION_PRESETS, prompt: "Select preset" %>
-  </div>
-
-  <div>
-    <%= form.label :custom_expires_at, "Or custom expiration date" %>
-    <%= form.datetime_local_field :custom_expires_at %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+    <div class="reply_form_buttons">
+      <%= link_to "Cancel", cancel_path, class: "secondary_button" %>
+      <%= form.submit class: "primary_button" %>
+    </div>
   </div>
 <% end %>

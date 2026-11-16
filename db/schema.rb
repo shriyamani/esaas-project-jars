@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_16_011329) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_16_173726) do
   create_table "category_follows", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "category", null: false
@@ -39,6 +39,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_011329) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "expiration_preset"
     t.index ["category"], name: "index_posts_on_category"
     t.index ["expires_at"], name: "index_posts_on_expires_at"
     t.index ["user_id"], name: "index_posts_on_user_id"

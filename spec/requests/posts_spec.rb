@@ -403,5 +403,78 @@ RSpec.describe "Posts", type: :request do
       expect(menu.at_css("summary.avatar").text.strip).to eq("O")
       expect(menu.text).to include("Other User", "other@barnard.edu")
     end
+
+    it "links the + button to the new post form and marks it current there" do
+      get posts_path
+      button = response.parsed_body.at_css("a.new_post_button")
+      expect(button["href"]).to eq(new_post_path)
+      expect(button["aria-current"]).to be_nil
+
+      get new_post_path
+      expect(response.parsed_body.at_css("a.new_post_button")["aria-current"]).to eq("page")
+    end
+  end
+
+  describe "new and edit post forms" do
+    before { sign_in author }
+
+    def form
+      response.parsed_body.at_css("form.post_form")
+    end
+
+    it "offers every category and expiration preset as a choice on the new form" do
+      get new_post_path
+
+      categories = form.css("input[type=radio][name='post[category]']").map { |r| r["value"] }
+      presets = form.css("input[type=radio][name='post[expiration_preset]']").map { |r| r["value"] }
+      expect(categories).to eq(Post::CATEGORIES)
+      expect(presets).to eq(Post::EXPIRATION_PRESETS)
+      expect(form.at_css("a", text: "Cancel")["href"]).to eq(posts_path)
+    end
+
+    it "keeps what was typed when creating fails" do
+      post posts_path, params: { post: { title: "", body: "Keep me", category: "Social", expiration_preset: "Tonight" } }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.body).to include("Title can&#39;t be blank", "Keep me")
+      expect(form.at_css("input[name='post[category]'][value='Social']")["checked"]).to eq("checked")
+    end
+
+    it "prefills the edit form with the current category and expiration" do
+      get edit_post_path(post_record)
+
+      expect(form.at_css("input[name='post[category]'][value='Housing']")["checked"]).to eq("checked")
+      expect(form.at_css("input[name='post[expiration_preset]'][value='Custom']")["checked"]).to eq("checked")
+      expect(form.at_css("input[name='post[custom_expires_at]']")["value"])
+        .to eq(post_record.expires_at.strftime("%Y-%m-%dT%H:%M:%S"))
+      expect(form.at_css("a", text: "Cancel")["href"]).to eq(post_path(post_record))
+    end
+
+    it "sends Cancel on the edit form to the feed once the post has expired" do
+      post_record.update_column(:expires_at, 1.day.ago)
+
+      get edit_post_path(post_record)
+
+      expect(form.at_css("a", text: "Cancel")["href"]).to eq(posts_path)
+    end
+
+    it "keeps the expiration when only the title is edited" do
+      original = post_record.expires_at
+
+      get edit_post_path(post_record)
+      prefilled = form.at_css("input[name='post[custom_expires_at]']")["value"]
+      patch post_path(post_record), params: { post: { title: "Renamed", expiration_preset: "Custom", custom_expires_at: prefilled } }
+
+      expect(post_record.reload).to have_attributes(title: "Renamed", expires_at: original)
+    end
+
+    it "shows when a post ends on its card and its page" do
+      get posts_path
+      expect(response.parsed_body.at_css(".post_card .post_expiration").text).to include("ENDS:")
+
+      get post_path(post_record)
+      expect(response.parsed_body.at_css(".post_detail .post_expiration time")["datetime"])
+        .to eq(post_record.expires_at.iso8601)
+    end
   end
 end

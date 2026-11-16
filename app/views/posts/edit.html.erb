@@ -1,8 +1,12 @@
-<h1>Edit Post</h1>
+<% back_path = @post.expires_at&.future? ? post_path(@post) : posts_path %>
 
-<%= render "form", post: @post %>
+<div class="post_page">
+  <%= link_to back_path, class: "back_link" do %>
+    <span aria-hidden="true">←</span> Back to post
+  <% end %>
 
-<div>
-  <%= link_to "Show", @post %> |
-  <%= link_to "Back to posts", posts_path %>
+  <div class="post_form_card">
+    <h1 class="post_form_title">Edit Post</h1>
+    <%= render "form", post: @post, cancel_path: back_path %>
+  </div>
 </div>

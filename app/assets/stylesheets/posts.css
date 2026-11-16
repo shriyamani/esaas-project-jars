@@ -124,10 +124,10 @@
 }
 
 .post_card_footer {
+  margin-top: auto;
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.6rem;
   padding-top: 0.75rem;
   border-top: 2px solid #e6eef8;
   font-size: 0.9rem;
@@ -481,3 +481,43 @@
 }
 
 .show_replies_chevron.is-up { transform: rotate(180deg); }
+
+.post_card_stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.post_expiration {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  color: #012169;
+}
+
+.post_expiration_date {
+  font-weight: 600;
+}
+
+.post_expiration_relative {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.7;
+}
+
+.post_expiration.is-ending-soon { 
+  color: #c8102e; 
+}
+
+.post_detail .post_card_footer {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.post_detail .post_expiration {
+  margin-left: auto;
+}
