@@ -9,6 +9,7 @@ class Post < ApplicationRecord
 
   has_many :replies, dependent: :destroy
   has_many :likes, dependent: :destroy
+  has_many :conversations, dependent: :destroy
 
   belongs_to :user
 

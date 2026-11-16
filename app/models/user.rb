@@ -7,6 +7,13 @@ class User < ApplicationRecord
   has_many :posts, dependent: :destroy
   has_many :category_follows, dependent: :destroy
   has_many :likes, dependent: :destroy
+  has_many :conversation_participants, dependent: :destroy
+  has_many :conversations, through: :conversation_participants
+  has_many :messages, dependent: :destroy
+
+  def unread_conversations_count
+    conversations.count { |conversation| conversation.unread_for?(self) }
+  end
 
   def followed_categories
     category_follows.pluck(:category)

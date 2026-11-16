@@ -1,0 +1,41 @@
+<div class="post_page">
+  <%= link_to conversations_path, class: "back_link" do %>
+    <span aria-hidden="true">←</span> Messages
+  <% end %>
+
+  <section class="chat_card" aria-labelledby="chat_title">
+    <header class="chat_header">
+      <h1 id="chat_title" class="chat_title"><%= @conversation.title_for(current_user) %></h1>
+      <% if @conversation.post %>
+        <%= link_to "View post", post_path(@conversation.post), class: "text_action" %>
+      <% end %>
+    </header>
+
+    <div id="messages" class="message_list">
+      <% if @messages.empty? %>
+        <p class="messages_empty">Say hi to start the conversation.</p>
+      <% end %>
+
+      <% @messages.each do |message| %>
+        <% mine = message.user_id == current_user.id %>
+        <div id="<%= dom_id(message) %>" class="message<%= ' is-mine' if mine %>">
+          <% unless mine %>
+            <span class="message_author"><%= message.display_author %></span>
+          <% end %>
+          <div class="message_bubble"><%= simple_format(message.body) %></div>
+          <time class="message_time" datetime="<%= message.created_at.iso8601 %>"
+                title="<%= message.created_at.strftime("%B %-d, %Y at %-l:%M %p") %>">
+            <%= short_time_ago(message.created_at) %>
+          </time>
+        </div>
+      <% end %>
+    </div>
+
+    <%= form_with(model: [ @conversation, @message ], id: "message_composer", class: "message_composer") do |form| %>
+      <%= form.label :body, "Message", class: "visually_hidden" %>
+      <%= form.text_area :body, rows: 2, maxlength: 2000, class: "form_input",
+            placeholder: "Write a message…" %>
+      <%= form.submit "Send", class: "primary_button" %>
+    <% end %>
+  </section>
+</div>
