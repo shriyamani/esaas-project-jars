@@ -7,7 +7,8 @@ Rails.application.routes.draw do
   resources :posts do
     resources :replies, only: [ :create, :edit, :update, :destroy ]
   end
-  root "pages#home"
+  resource :category_follow, only: [ :create, :destroy ]
+  root "posts#index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

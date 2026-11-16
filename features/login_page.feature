@@ -26,8 +26,9 @@ Feature: Sign-in page
     And I should see a "Sign in with Google" button
 
   Scenario: Signing out returns me to the log in page
-    Given I am logged in as "rl1234@columbia.edu"
+    Given I am logged in as "rc3934@columbia.edu"
     And I am on the home page
-    When I press "Log out"
+    When I open the profile menu
+    And I press "Log out"
     Then I should be on the log in page
     And I should see a "Sign in with Google" button

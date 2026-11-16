@@ -1,12 +1,26 @@
-<h1>LionDen Posts</h1>
+<div class="feed_header">
+  <h1><%= @view_title %></h1>
+</div>
 
 <div>
   <%= link_to "New Post", new_post_path %>
 </div>
 
 <div id="posts">
-  <% if @posts.empty? %>
-    <p>No active posts found.</p>
+  <% if @follows_nothing %>
+    <div class="follow_prompt">
+      <p>You're not following any categories yet. Follow one to see its posts here:</p>
+      <div class="follow_prompt_buttons">
+        <% Post::CATEGORIES.each do |category| %>
+          <%= button_to "+ #{category}", category_follow_path,
+                params: { category: category },
+                class: "follow_prompt_button",
+                form: { class: "follow_prompt_form" } %>
+        <% end %>
+      </div>
+    </div>
+  <% elsif @posts.empty? %>
+    <p><%= params[:feed] == "following" ? "No active posts in the categories you follow." : "No active posts found." %></p>
   <% else %>
     <% @posts.each do |post| %>
       <div id="<%= dom_id(post) %>" class="post-card">

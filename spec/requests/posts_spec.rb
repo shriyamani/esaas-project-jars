@@ -185,4 +185,69 @@ RSpec.describe "Posts", type: :request do
       expect(response.body).not_to include(expired_post.title)
     end
   end
+
+  describe "feed views" do
+    before { sign_in other_user }
+
+    def heading
+      response.parsed_body.at_css("main h1").text.strip
+    end
+
+    it "titles the default view 'All posts'" do
+      get posts_path
+      expect(heading).to eq("All posts")
+    end
+
+    it "titles a category view with the category name" do
+      get posts_path, params: { category: "Housing" }
+      expect(heading).to eq("Housing")
+    end
+
+    it "shows only posts from followed categories under Following" do
+      create(:category_follow, user: other_user, category: "Housing")
+      create(:post, user: author, title: "Academic Post", category: "Academics")
+
+      get posts_path, params: { feed: "following" }
+
+      expect(heading).to eq("Following")
+      expect(response.body).to include("Original Title")
+      expect(response.body).not_to include("Academic Post")
+    end
+
+    it "shows the follow prompt when the user follows nothing" do
+      get posts_path, params: { feed: "following" }
+
+      expect(response.body).to include("You're not following any categories yet.")
+      expect(response.body).not_to include("Original Title")
+    end
+
+    it "says when followed categories have no active posts" do
+      create(:category_follow, user: other_user, category: "Travel")
+      get posts_path, params: { feed: "following" }
+      expect(response.body).to include("No active posts in the categories you follow.")
+    end
+
+    it "does not show expired posts under Following" do
+      create(:category_follow, user: other_user, category: "Housing")
+      post_record.update_column(:expires_at, 1.day.ago)
+
+      get posts_path, params: { feed: "following" }
+
+      expect(response.body).not_to include("Original Title")
+    end
+
+    it "lists followed categories first in the category bar" do
+      create(:category_follow, user: other_user, category: "Travel")
+      get posts_path
+
+      labels = response.parsed_body.css(".category_bar .category_tab .category_label").map(&:text)
+      expect(labels).to eq([ "Travel" ] + (Post::CATEGORIES - [ "Travel" ]))
+    end
+
+    it "links a selected category back to All posts" do
+      get posts_path, params: { category: "Housing" }
+      link = response.parsed_body.at_css('.category_tab a[aria-current="page"]')
+      expect(link["href"]).to eq(posts_path)
+    end
+  end
 end

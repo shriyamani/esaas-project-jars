@@ -1,0 +1,40 @@
+<% on_feed = controller_name == "posts" && action_name == "index" %>
+<% viewing_following = on_feed && params[:feed] == "following" %>
+<% viewing_all = on_feed && params[:feed].blank? && !Post::CATEGORIES.include?(params[:category]) %>
+<% followed_categories = current_user.followed_categories %>
+<% followed, others = Post::CATEGORIES.partition { |c| followed_categories.include?(c) } %>
+
+<nav aria-label="Categories" class="category_bar">
+  <%= link_to "All", posts_path,
+        class: "category_tab category_label",
+        aria: { current: (viewing_all ? "page" : nil) } %>
+  <%= link_to "Following",
+        viewing_following ? posts_path : posts_path(feed: "following"),
+        class: "category_tab category_label",
+        aria: { current: (viewing_following ? "page" : nil) } %>
+
+  <span class="category_divider" aria-hidden="true"></span>
+
+  <% (followed + others).each do |category| %>
+    <% active = on_feed && params[:category] == category %>
+    <% is_followed = followed.include?(category) %>
+    <div class="category_tab <%= 'is-active' if active %>">
+      <%= link_to category,
+            active ? posts_path : posts_path(category: category),
+            class: "category_label",
+            aria: { current: (active ? "page" : nil) } %>
+      <%= button_to category_follow_path,
+            method: (is_followed ? :delete : :post),
+            params: { category: category },
+            class: "category_icon",
+            form: { class: "category_follow_form" },
+            aria: { label: "#{is_followed ? 'Unfollow' : 'Follow'} #{category}", pressed: is_followed } do %>
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+          <path d="M6 3h12v18l-6-4-6 4z"
+                fill="<%= is_followed ? 'currentColor' : 'none' %>"
+                stroke="currentColor" stroke-width="2"/>
+        </svg>
+      <% end %>
+    </div>
+  <% end %>
+</nav>
