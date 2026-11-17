@@ -1,5 +1,10 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe ConversationParticipant, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it "allows a user to join a conversation only once" do
+    participant = create(:conversation_participant)
+    duplicate = build(:conversation_participant, conversation: participant.conversation, user: participant.user)
+
+    expect(duplicate).not_to be_valid
+  end
 end

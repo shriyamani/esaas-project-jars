@@ -101,6 +101,28 @@ RSpec.describe User, type: :model do
       expect(user.errors[:email]).to include("must be a Columbia or Barnard address")
     end
 
-    
+
+  end
+
+  describe "messaging" do
+    let(:user) { create(:user, name: "Me") }
+    let(:zoe) { create(:user, name: "Zoe") }
+    let(:adam) { create(:user, name: "Adam") }
+
+    it "lists people I have chatted with as contacts, alphabetically" do
+      [ zoe, adam ].each do |other|
+        create(:message, conversation: Conversation.direct_between(user, other), user: other)
+      end
+      Conversation.direct_between(user, create(:user, name: "No messages yet"))
+
+      expect(user.contacts).to eq([ adam, zoe ])
+    end
+
+    it "counts conversations with unread messages" do
+      create(:message, conversation: Conversation.direct_between(user, zoe), user: zoe)
+      create(:message, conversation: Conversation.direct_between(user, adam), user: user)
+
+      expect(user.unread_conversations_count).to eq(1)
+    end
   end
 end

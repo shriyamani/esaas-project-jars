@@ -29,8 +29,8 @@
 
           <% if editing %>
             <%= form_with(model: [ @conversation, message ], class: "message_edit_form") do |form| %>
-              <%= form.label :body, "Edit message", class: "visually_hidden" %>
-              <%= form.text_area :body, rows: 2, maxlength: 2000, class: "form_input" %>
+              <%= form.label :body, "Edit message", class: "visually_hidden", for: "edit_message_body" %>
+              <%= form.text_area :body, rows: 2, maxlength: 2000, class: "form_input", id: "edit_message_body" %>
               <div class="message_edit_buttons">
                 <%= link_to "Cancel", conversation_path(@conversation, anchor: dom_id(message)), class: "text_action" %>
                 <%= form.submit "Save", class: "primary_button" %>

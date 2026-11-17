@@ -10,6 +10,8 @@ module NavigationHelpers
         when "the FAQ page"      then faq_path
         when "the about page"    then about_path
         when "the contact page"  then contact_path
+        when "the messages page" then conversations_path
+        when "the new message page" then new_conversation_path
         else raise "No path mapped for '#{page_name}' in navigation_steps.rb"
         end
     end
