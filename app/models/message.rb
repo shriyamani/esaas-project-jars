@@ -5,6 +5,18 @@ class Message < ApplicationRecord
   validates :body, presence: true, length: { maximum: 2000 }
   validate :sender_must_be_participant
 
+  EDIT_WINDOW = 15.minutes
+
+  before_update { self.edited_at = Time.current if will_save_change_to_body? }
+
+  def editable_by?(user)
+    user_id == user.id && created_at > EDIT_WINDOW.ago
+  end
+
+  def edited?
+    edited_at.present?
+  end
+
   def display_author
     conversation.name_for(user)
   end

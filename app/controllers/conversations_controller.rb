@@ -14,7 +14,7 @@ class ConversationsController < ApplicationController
 
   def show
     @conversation = Conversation.for_user(current_user).find(params[:id])
-    @messages = @conversation.messages.includes(:user).order(:created_at, :id)
+    @messages = @conversation.messages.includes(:user).order(:created_at, :id).to_a
     @message = Message.new
     @conversation.mark_read_by(current_user) unless request.headers["X-Sec-Purpose"] == "prefetch"
   end

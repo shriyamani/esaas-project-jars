@@ -316,3 +316,40 @@
   gap: 0.4rem;
   width: 100%;
 }
+
+.message_footer {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+}
+
+.message_edited,
+.message_receipt {
+  font-size: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.message_action { 
+  font-size: 0.75rem; 
+}
+
+.message_edit_form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.message_edit_buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.message_actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}

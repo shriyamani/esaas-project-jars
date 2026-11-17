@@ -67,4 +67,11 @@ class Conversation < ApplicationRecord
   def mark_read_by(user)
     conversation_participants.where(user_id: user.id).update_all(last_read_at: Time.current)
   end
+
+  def seen_by(message)
+    conversation_participants.includes(:user)
+                            .where.not(user_id: message.user_id)
+                            .where("last_read_at >= ?", message.created_at)
+                            .map(&:user)
+  end
 end

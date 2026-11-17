@@ -16,17 +16,61 @@
         <p class="messages_empty">Say hi to start the conversation.</p>
       <% end %>
 
+      <% last_message = @messages.last %>
+
       <% @messages.each do |message| %>
         <% mine = message.user_id == current_user.id %>
+        <% editing = mine && params[:editing].to_i == message.id && message.editable_by?(current_user) %>
+
         <div id="<%= dom_id(message) %>" class="message<%= ' is-mine' if mine %>">
           <% unless mine %>
             <span class="message_author"><%= message.display_author %></span>
           <% end %>
-          <div class="message_bubble"><%= simple_format(message.body) %></div>
-          <time class="message_time" datetime="<%= message.created_at.iso8601 %>"
-                title="<%= message.created_at.strftime("%B %-d, %Y at %-l:%M %p") %>">
-            <%= short_time_ago(message.created_at) %>
-          </time>
+
+          <% if editing %>
+            <%= form_with(model: [ @conversation, message ], class: "message_edit_form") do |form| %>
+              <%= form.label :body, "Edit message", class: "visually_hidden" %>
+              <%= form.text_area :body, rows: 2, maxlength: 2000, class: "form_input" %>
+              <div class="message_edit_buttons">
+                <%= link_to "Cancel", conversation_path(@conversation, anchor: dom_id(message)), class: "text_action" %>
+                <%= form.submit "Save", class: "primary_button" %>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="message_bubble"><%= simple_format(message.body) %></div>
+          <% end %>
+
+          <div class="message_footer">
+            <% if mine && message == last_message %>
+              <% seen = @conversation.seen_by(message) %>
+              <span class="message_receipt">
+                <% if seen.empty? %>
+                  Sent
+                <% elsif @conversation.group? %>
+                  Seen by <%= seen.map { |person| @conversation.name_for(person) }.to_sentence %>
+                <% else %>
+                  Seen
+                <% end %>
+              </span>
+              <span class="message_separator" aria-hidden="true">●</span>
+            <% end %>
+            <time class="message_time" datetime="<%= message.created_at.iso8601 %>"
+                  title="<%= message.created_at.strftime("%B %-d, %Y at %-l:%M %p") %>">
+              <%= short_time_ago(message.created_at) %>
+            </time>
+            <% if message.edited? %>
+              <span class="message_edited">· Edited</span>
+            <% end %>
+          </div>
+
+          <% if mine && !editing %>
+            <div class="message_actions">
+              <% if message.editable_by?(current_user) %>
+                <%= link_to "Edit", conversation_path(@conversation, editing: message.id, anchor: dom_id(message)),
+                      class: "text_action message_action" %>
+              <% end %>
+            </div>
+          <% end %>
         </div>
       <% end %>
     </div>

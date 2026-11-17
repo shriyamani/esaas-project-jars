@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
   resource :category_follow, only: [ :create, :destroy ]
   resources :conversations, only: [ :index, :show, :new, :create ] do
-    resources :messages, only: [ :create ]
+    resources :messages, only: [ :create, :update ]
   end
   root "posts#index"
 

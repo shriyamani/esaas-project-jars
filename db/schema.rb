@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_16_215403) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_17_004503) do
   create_table "category_follows", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "category", null: false
@@ -56,6 +56,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_215403) do
     t.text "body", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "edited_at"
     t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
