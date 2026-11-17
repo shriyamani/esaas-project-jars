@@ -15,6 +15,19 @@ class User < ApplicationRecord
     conversations.count { |conversation| conversation.unread_for?(self) }
   end
 
+  def contacts
+    chat_ids = Conversation.for_user(self)
+                          .where(kind: "direct", post_id: nil)
+                          .where(id: Message.select(:conversation_id))
+                          .select("conversations.id")
+
+    User.joins(:conversation_participants)
+        .where(conversation_participants: { conversation_id: chat_ids })
+        .where.not(id: id)
+        .distinct
+        .order(:name)
+  end
+
   def followed_categories
     category_follows.pluck(:category)
   end

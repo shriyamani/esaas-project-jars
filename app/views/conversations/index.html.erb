@@ -1,46 +1,79 @@
 <div class="post_page">
-  <h1 class="messages_title">Messages</h1>
+  <div class="messages_header">
+    <h1 class="messages_title">Messages</h1>
 
-  <% if @conversations.empty? %>
-    <p class="messages_empty">No messages yet. You'll see your conversations here once you message someone or someone messages you.</p>
+    <nav class="messages_tabs" aria-label="Messages views">
+      <%= link_to "Chats", conversations_path, class: "messages_tab",
+            aria: { current: (@tab == "chats" ? "page" : nil) } %>
+      <%= link_to "Contacts", conversations_path(tab: "contacts"), class: "messages_tab",
+            aria: { current: (@tab == "contacts" ? "page" : nil) } %>
+    </nav>
+
+    <%= link_to new_conversation_path, class: "primary_button new_message_button" do %>
+      <span aria-hidden="true">+</span> New message
+    <% end %>
+  </div>
+
+  <% if @tab == "contacts" %>
+    <% if @contacts.empty? %>
+      <p class="messages_empty">No contacts yet. People you message or who message you will show up here.</p>
+    <% else %>
+      <ul class="conversation_list">
+        <% @contacts.each do |contact| %>
+          <li id="<%= dom_id(contact, :contact) %>" class="contact_row">
+            <span class="post_card_avatar" aria-hidden="true"><%= contact.name.to_s.first.to_s.upcase %></span>
+            <div class="conversation_summary">
+              <span class="contact_name"><%= contact.name %></span>
+              <span class="contact_email"><%= contact.email %></span>
+            </div>
+            <%= button_to "Message", conversations_path, params: { user_id: contact.id },
+                  class: "secondary_button", form: { class: "inline_form" },
+                  aria: { label: "Message #{contact.name}" } %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
   <% else %>
-    <ul class="conversation_list">
-      <% @conversations.each do |conversation| %>
-        <% title = conversation.title_for(current_user) %>
-        <% last = conversation.last_message %>
-        <% unread = conversation.unread_for?(current_user) %>
-        <li id="<%= dom_id(conversation) %>" class="conversation_row<%= ' is-unread' if unread %>">
-          <span class="post_card_avatar" aria-hidden="true">
-            <%= conversation.group? ? "#" : (title == "Anonymous" ? "?" : title.first.upcase) %>
-          </span>
-          <div class="conversation_summary">
-              <span class="conversation_name_row">
-                <%= link_to title, conversation_path(conversation), class: "conversation_link",
-                      data: { turbo_prefetch: false } %>
-                <% if unread %>
-                  <span class="unread_dot"><span class="visually_hidden">Unread</span></span>
+    <% if @conversations.empty? %>
+      <p class="messages_empty">No messages yet. Message someone from their post, or start a new message.</p>
+    <% else %>
+      <ul class="conversation_list">
+        <% @conversations.each do |conversation| %>
+          <% title = conversation.title_for(current_user) %>
+          <% last = conversation.last_message %>
+          <% unread = conversation.unread_for?(current_user) %>
+          <li id="<%= dom_id(conversation) %>" class="conversation_row<%= ' is-unread' if unread %>">
+            <span class="post_card_avatar" aria-hidden="true">
+              <%= conversation.group? ? "#" : (title == "Anonymous" ? "?" : title.first.upcase) %>
+            </span>
+            <div class="conversation_summary">
+                <span class="conversation_name_row">
+                  <%= link_to title, conversation_path(conversation), class: "conversation_link",
+                        data: { turbo_prefetch: false } %>
+                  <% if unread %>
+                    <span class="unread_dot"><span class="visually_hidden">Unread</span></span>
+                  <% end %>
+                </span>
+              <span class="conversation_preview">
+                <% if last %>
+                  <%= last.user_id == current_user.id ? "You: " : "" %><%= truncate(last.body, length: 70) %>
+                <% else %>
+                  No messages yet
                 <% end %>
               </span>
-            <span class="conversation_preview">
+            </div>
+            <div class="conversation_meta">
               <% if last %>
-                <%= last.user_id == current_user.id ? "You: " : "" %><%= truncate(last.body, length: 70) %>
-              <% else %>
-                No messages yet
+                <span class="conversation_time"><%= short_time_ago(last.created_at) %></span>
               <% end %>
-            </span>
-          </div>
-          <div class="conversation_meta">
-            <% if last %>
-              <span class="conversation_time"><%= short_time_ago(last.created_at) %></span>
-            <% end %>
-          </div>
-          <svg class="conversation_arrow" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-            <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor"
-                  stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </li>
-        </li>
-      <% end %>
-    </ul>
+            </div>
+            <svg class="conversation_arrow" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor"
+                    stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
   <% end %>
 </div>

@@ -216,3 +216,103 @@
   min-height: 2.75rem;
   resize: vertical;
 }
+
+.messages_header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.new_message_button {
+  display: inline-flex;
+  margin-left: auto;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+}
+
+.messages_tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  background: #ffffff;
+  border: 2px solid #012169;
+}
+
+.messages_tab {
+  padding: 0.35rem 1rem;
+  color: #012169;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.messages_tab:hover { 
+  background: #e6eef8; 
+}
+
+.messages_tab[aria-current="page"] {
+  background: #012169;
+  color: #ffffff;
+}
+
+.contact_row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: #ffffff;
+  color: #012169;
+  border: 2px solid #012169;
+  border-radius: 0.4rem;
+}
+
+.contact_name { 
+  font-weight: 600; 
+}
+
+.contact_email {
+  color: #000000;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+}
+
+.avatar_menu {
+  position: relative;
+  z-index: 2;
+}
+
+.avatar_menu_trigger {
+  list-style: none;
+  cursor: pointer;
+}
+
+.avatar_menu_trigger:hover { 
+  background: #6CACE4; 
+}
+
+.avatar_menu_popover {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.85rem;
+  background: #ffffff;
+  color: #012169;
+  border: 2px solid #012169;
+  border-radius: 0.4rem;
+}
+
+.avatar_menu_name { 
+  font-weight: 700; 
+}
+
+.avatar_menu_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+}
