@@ -1,0 +1,26 @@
+<div class="post_page">
+  <%= link_to conversations_path, class: "back_link" do %>
+    <span aria-hidden="true">←</span> Messages
+  <% end %>
+
+  <div class="post_form_card">
+    <h1 class="post_form_title">New message</h1>
+
+    <%= form_with url: conversations_path, method: :post, class: "post_form" do |form| %>
+      <div class="form_field">
+        <%= form.label :email, "Email:", class: "form_label" %>
+        <%= form.email_field :email, value: @email, class: "form_input",
+              placeholder: "ab1234@columbia.edu", required: true, autofocus: true %>
+        <p class="form_hint">Enter the Columbia or Barnard email of the LionDen user you want to message.</p>
+      </div>
+
+      <div class="form_footer">
+        <span></span>
+        <div class="reply_form_buttons">
+          <%= link_to "Cancel", conversations_path, class: "secondary_button" %>
+          <%= form.submit "Start chat", class: "primary_button" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

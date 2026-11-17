@@ -53,3 +53,7 @@ main {
     border-width: 0;
   }
 }
+
+.visually_hidden {
+  display: none
+}

@@ -1,0 +1,21 @@
+<% if user.nil? || user == current_user %>
+  <span class="<%= avatar_class %>" aria-hidden="true"><%= initial %></span>
+<% else %>
+  <details class="avatar_menu" data-dropdown>
+    <summary class="<%= avatar_class %> avatar_menu_trigger" aria-label="Open menu for <%= user.name %>">
+      <%= initial %>
+    </summary>
+    <div class="avatar_menu_popover">
+      <span class="avatar_menu_name"><%= user.name %></span>
+      <%= button_to conversations_path, params: { user_id: user.id },
+            class: "primary_button avatar_menu_button",
+            aria: { label: "Message #{user.name}" } do %>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M3.5 6.5 12 13l8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        Message
+      <% end %>
+    </div>
+  </details>
+<% end %>

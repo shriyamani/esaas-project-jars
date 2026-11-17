@@ -5,9 +5,10 @@
 
   <article class="post_detail">
     <header class="post_detail_header">
-      <span class="post_card_avatar" aria-hidden="true">
-        <%= @post.anonymous? ? "?" : @post.display_author.to_s.first.to_s.upcase %>
-      </span>
+      <%= render "users/avatar_menu",
+        user: (@post.anonymous? ? nil : @post.user),
+        initial: (@post.anonymous? ? "?" : @post.display_author.to_s.first.to_s.upcase),
+        avatar_class: "post_card_avatar" %>
       <div class="post_card_meta">
         <span class="post_card_author author-name"><%= @post.display_author %></span>
         <span class="post_card_time"><%= time_ago_in_words(@post.created_at) %> ago</span>
