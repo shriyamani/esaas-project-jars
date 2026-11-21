@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_many :posts, dependent: :destroy
   has_many :category_follows, dependent: :destroy
   has_many :likes, dependent: :destroy
+  has_many :rsvps, dependent: :destroy
+  has_many :rsvped_posts, through: :rsvps, source: :post
 
   def followed_categories
     category_follows.pluck(:category)

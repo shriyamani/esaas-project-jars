@@ -212,4 +212,107 @@ RSpec.describe Post, type: :model do
       expect(post.liked_by?(create(:user))).to be false
     end
   end
+
+  describe "event date validation" do
+    let(:freeze_time) { Time.zone.local(2026, 11, 15, 12, 0, 0) }
+
+    it "is valid when event date is before post expires" do
+      travel_to freeze_time do
+        post = build(:post, event_date: Date.tomorrow, expires_at: 3.days.from_now)
+        expect(post).to be_valid
+      end
+    end
+
+    it "is valid when event date is on the same day as expiration" do
+      travel_to freeze_time do
+        post = build(:post, event_date: Date.current + 2.days, expires_at: (Date.current + 2.days).end_of_day)
+        expect(post).to be_valid
+      end
+    end
+
+    it "rejects an event date after the post expires" do
+      travel_to freeze_time do
+        post = build(:post, event_date: Date.current + 5.days, expires_at: 2.days.from_now)
+        expect(post).not_to be_valid
+        expect(post.errors[:event_date]).to include("can't be after the post expires")
+      end
+    end
+
+    it "rejects an event time after the post expires" do
+      travel_to freeze_time do
+        post = build(
+          :post,
+          event_date: Date.current + 2.days,
+          event_time: "8:00 PM",
+          expires_at: Time.zone.local(2026, 11, 17, 18, 0, 0)
+        )
+        expect(post).not_to be_valid
+        expect(post.errors[:event_date]).to include("can't be after the post expires")
+      end
+    end
+  end
+
+  describe ".upcoming" do
+    let(:freeze_time) { Time.zone.local(2026, 11, 15, 12, 0, 0) }
+
+    it "includes future events and excludes past events and non-events" do
+      travel_to freeze_time do
+        future_event = create(:post, event_date: Date.current + 2.days, expires_at: 5.days.from_now)
+        past_event = build(:post, event_date: Date.current - 2.days, expires_at: 5.days.from_now)
+        past_event.save(validate: false)
+        non_event = create(:post, event_date: nil, expires_at: 5.days.from_now)
+
+        upcoming_posts = Post.upcoming
+        expect(upcoming_posts).to include(future_event)
+        expect(upcoming_posts).not_to include(past_event)
+        expect(upcoming_posts).not_to include(non_event)
+      end
+    end
+
+    it "drops events once their date has passed" do
+      travel_to freeze_time do
+        event = create(:post, event_date: Date.current + 1.day, expires_at: 5.days.from_now)
+        expect(Post.upcoming).to include(event)
+
+        travel 2.days
+        expect(Post.upcoming).not_to include(event)
+      end
+    end
+  end
+
+  describe ".for_user" do
+    let(:current_student) { create(:user) }
+    let(:other_student) { create(:user) }
+
+    it "returns posts created by the user" do
+      authored_post = create(:post, user: current_student)
+      other_post = create(:post, user: other_student)
+
+      expect(Post.for_user(current_student)).to include(authored_post)
+      expect(Post.for_user(current_student)).not_to include(other_post)
+    end
+
+    it "returns posts the user has RSVP'd to" do
+      post_to_attend = create(:post, user: other_student)
+      create(:rsvp, user: current_student, post: post_to_attend)
+
+      unrelated_post = create(:post, user: other_student)
+
+      user_posts = Post.for_user(current_student)
+      expect(user_posts).to include(post_to_attend)
+      expect(user_posts).not_to include(unrelated_post)
+    end
+
+    it "does not duplicate posts if the user authored and RSVP'd to them" do
+      own_post = create(:post, user: current_student)
+      create(:rsvp, user: current_student, post: own_post)
+
+      expect(Post.for_user(current_student).where(id: own_post.id).count).to eq(1)
+    end
+
+    it "returns none when user is nil" do
+      create(:post)
+      expect(Post.for_user(nil)).to be_empty
+    end
+  end
 end
