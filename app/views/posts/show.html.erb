@@ -1,6 +1,12 @@
 <div class="post_page">
-  <%= link_to my_activity_path, class: "back_link" do %>
-    <span aria-hidden="true">←</span> Back to My Activity
+  <% if params[:from] == "calendar" %>
+    <%= link_to calendar_path, class: "back_link" do %>
+      <span aria-hidden="true">←</span> Back to Calendar
+    <% end %>
+  <% else %>
+    <%= link_to my_activity_path, class: "back_link" do %>
+      <span aria-hidden="true">←</span> Back to My Activity
+    <% end %>
   <% end %>
 
   <article class="post_detail">
