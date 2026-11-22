@@ -27,17 +27,17 @@ main {
 }
 
 .flash_banner--alert {
-  background: #fdecec;
-  color: #a12828;
-  border: 1px solid #f3b9b9;
+  background: var(--color-alert-bg);
+  color: var(--color-alert-text);
+  border: 1px solid var(--color-alert-border);
   animation: flash-fade-out 0.5s ease 1s forwards;
   overflow: hidden;
 }
 
 .flash_banner--notice {
-  background: #e7f6ec;
-  color: #1e6b3a;
-  border: 1px solid #b6e2c4;
+  background: var(--color-notice-bg);
+  color: var(--color-notice-text);
+  border: 1px solid var(--color-notice-border);
   animation: flash-fade-out 0.5s ease 1s forwards;
   overflow: hidden;
 }
