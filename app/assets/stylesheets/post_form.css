@@ -1,4 +1,5 @@
 .post_form_card {
+  position: relative;
   padding: 1.5rem;
   background: var(--color-surface);
   color: var(--color-primary);

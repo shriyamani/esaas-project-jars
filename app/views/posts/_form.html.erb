@@ -12,6 +12,7 @@
 
   <div class="post_type_selector" role="group" aria-label="Post type">
     <button type="button" class="post_type_button <%= 'is-active' unless post.event? %>" data-post-form-target="postBtn" data-action="click->post-form#userSelectPost">Regular Post</button>
+    <span class="post_type_divider" aria-hidden="true"></span>
     <button type="button" class="post_type_button <%= 'is-active' if post.event? %>" data-post-form-target="eventBtn" data-action="click->post-form#userSelectEvent">Event</button>
   </div>
 
@@ -43,7 +44,7 @@
     <div class="chip_group">
       <% Post::EXPIRATION_PRESETS.each do |preset| %>
         <label class="chip">
-          <%= form.radio_button :expiration_preset, preset %>
+          <%= form.radio_button :expiration_preset, preset, data: { action: "change->post-form#syncCustomExpiration" } %>
           <span><%= preset %></span>
         </label>
       <% end %>
@@ -51,7 +52,7 @@
 
     <div class="expiration_custom">
       <%= form.label :custom_expires_at, "Custom expiration", class: "form_label form_label--small" %>
-      <%= form.datetime_local_field :custom_expires_at, class: "form_input",
+      <%= form.datetime_local_field :custom_expires_at, class: "form_input", data: { post_form_target: "customExpiration" },
             min: Time.current.strftime("%Y-%m-%dT%H:%M") %>
     </div>
   </fieldset>
@@ -63,8 +64,17 @@
     </div>
 
     <div class="form_field">
-      <%= form.label :event_time, "Event Time", class: "form_label" %>
-      <%= form.text_field :event_time, class: "form_input", placeholder: "e.g. 5:00 PM or 9:00 PM - 10:00 PM", data: { post_form_target: "eventTime" } %>
+      <span class="form_label">Event Time</span>
+      <div class="event_time_range">
+        <div class="event_time_field">
+          <%= form.label :event_start_time, "Start", class: "event_time_sublabel" %>
+          <%= form.time_field :event_start_time, class: "form_input", data: { post_form_target: "eventStartTime" } %>
+        </div>
+        <div class="event_time_field">
+          <%= form.label :event_end_time, "End (optional)", class: "event_time_sublabel" %>
+          <%= form.time_field :event_end_time, class: "form_input", data: { post_form_target: "eventEndTime" } %>
+        </div>
+      </div>
     </div>
 
     <div class="form_field">

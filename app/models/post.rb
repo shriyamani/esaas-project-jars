@@ -6,6 +6,7 @@ class Post < ApplicationRecord
   TRENDING_REPLY_WEIGHT = 2
 
   attr_accessor :custom_expires_at
+  attr_writer :event_start_time, :event_end_time
 
   alias_attribute :date, :event_date
   alias_attribute :time, :event_time
@@ -19,6 +20,7 @@ class Post < ApplicationRecord
 
   belongs_to :user
 
+  before_validation :compose_event_time
   before_validation :apply_expiration_preset
   after_create :notify_followers
 
@@ -27,6 +29,7 @@ class Post < ApplicationRecord
   validates :expires_at, presence: true
   validate :expires_at_must_be_in_the_future, if: -> { expires_at.present? && expires_at_changed? }
   validates :expiration_preset, inclusion: { in: EXPIRATION_PRESETS }, allow_nil: true
+  validate :event_end_time_requires_start_time
   validate :event_date_cannot_be_after_expires_at, if: -> { event_date.present? && expires_at.present? }
 
   scope :active, -> { where("expires_at > ?", Time.current) }
@@ -81,6 +84,17 @@ class Post < ApplicationRecord
     rsvps.exists?(user_id: user.id)
   end
 
+  def event_start_time
+    return @event_start_time if defined?(@event_start_time)
+    to_time_input_value(event_time_parts.first)
+  end
+
+  def event_end_time
+    return @event_end_time if defined?(@event_end_time)
+    parts = event_time_parts
+    parts.size > 1 ? to_time_input_value(parts.last) : nil
+  end
+
   def start_time
     return nil unless event_date.present?
     if event_time.present?
@@ -115,6 +129,43 @@ class Post < ApplicationRecord
 
   private
 
+  def event_time_parts
+    event_time.to_s.split("-").map(&:strip).reject(&:blank?)
+  end
+
+  def to_time_input_value(str)
+    return nil if str.blank?
+    Time.zone.parse("2000-01-01 #{str}")&.strftime("%H:%M")
+  rescue StandardError
+    nil
+  end
+
+  def format_time_for_display(str)
+    Time.zone.parse("2000-01-01 #{str}")&.strftime("%-l:%M %p")
+  rescue StandardError
+    nil
+  end
+
+  def compose_event_time
+    return unless defined?(@event_start_time) || defined?(@event_end_time)
+
+    start_str = format_time_for_display(@event_start_time) if @event_start_time.present?
+    end_str = format_time_for_display(@event_end_time) if @event_end_time.present?
+
+    self.event_time =
+      if start_str && end_str && start_str != end_str
+        "#{start_str} - #{end_str}"
+      else
+        start_str
+      end
+  end
+
+  def event_end_time_requires_start_time
+    if @event_end_time.present? && @event_start_time.blank?
+      errors.add(:event_start_time, "is required when an end time is set")
+    end
+  end
+
   def notify_followers
     Notification.for_new_post(self)
   end
@@ -146,9 +197,16 @@ class Post < ApplicationRecord
       end
     end
 
-    if event_date.present? && expires_at.blank?
+    if event_date.present? && (expires_at.blank? || event_rescheduled_without_explicit_expiration?)
       self.expires_at = end_time || event_date.in_time_zone.end_of_day
     end
+  end
+
+  def event_rescheduled_without_explicit_expiration?
+    persisted? &&
+      (will_save_change_to_event_date? || will_save_change_to_event_time?) &&
+      !will_save_change_to_expiration_preset? &&
+      custom_expires_at.blank?
   end
 
   def preset_newly_chosen?

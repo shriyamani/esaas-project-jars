@@ -61,7 +61,7 @@ class PostsController < ApplicationController
 
   def edit
     @post.expiration_preset ||= "Custom"
-    @post.custom_expires_at ||= @post.expires_at
+    @post.custom_expires_at ||= @post.expires_at&.change(sec: 0)
   end
 
   def update
@@ -104,6 +104,8 @@ class PostsController < ApplicationController
       :expires_at,
       :event_date,
       :event_time,
+      :event_start_time,
+      :event_end_time,
       :location,
       :date,
       :time

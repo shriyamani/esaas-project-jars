@@ -122,6 +122,44 @@ RSpec.describe Post, type: :model do
     end
   end
 
+  describe "event start/end time fields" do
+    it "combines start and end time inputs into a range" do
+      post = build(:post, event_date: Date.tomorrow, event_start_time: "21:00", event_end_time: "22:30")
+      post.valid?
+      expect(post.event_time).to eq("9:00 PM - 10:30 PM")
+    end
+
+    it "stores a single time when only a start time is given" do
+      post = build(:post, event_date: Date.tomorrow, event_start_time: "09:15", event_end_time: "")
+      post.valid?
+      expect(post.event_time).to eq("9:15 AM")
+    end
+
+    it "clears the event time when both inputs are blank" do
+      post = build(:post, event_date: Date.tomorrow, event_time: "5:00 PM", event_start_time: "", event_end_time: "")
+      post.valid?
+      expect(post.event_time).to be_nil
+    end
+
+    it "requires a start time when an end time is given" do
+      post = build(:post, event_date: Date.tomorrow, event_start_time: "", event_end_time: "22:00")
+      expect(post).not_to be_valid
+      expect(post.errors[:event_start_time]).to include("is required when an end time is set")
+    end
+
+    it "reads start and end inputs back from a stored range" do
+      post = build(:post, event_time: "9:00 PM - 10:30 PM")
+      expect(post.event_start_time).to eq("21:00")
+      expect(post.event_end_time).to eq("22:30")
+    end
+
+    it "reads a single stored time as a start time with no end" do
+      post = build(:post, event_time: "5:00 PM")
+      expect(post.event_start_time).to eq("17:00")
+      expect(post.event_end_time).to be_nil
+    end
+  end
+
   describe "#display_author" do
     it "returns Anonymous when anonymous is true" do
       post = build(:post, user: user, anonymous: true)

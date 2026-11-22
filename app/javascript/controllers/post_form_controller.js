@@ -6,8 +6,10 @@ export default class extends Controller {
     "eventBtn",
     "expirationSection",
     "eventSection",
+    "customExpiration",
     "eventDate",
-    "eventTime",
+    "eventStartTime",
+    "eventEndTime",
     "location"
   ]
 
@@ -21,7 +23,8 @@ export default class extends Controller {
 
   userSelectPost() {
     if (this.hasEventDateTarget) this.eventDateTarget.value = ""
-    if (this.hasEventTimeTarget) this.eventTimeTarget.value = ""
+    if (this.hasEventStartTimeTarget) this.eventStartTimeTarget.value = ""
+    if (this.hasEventEndTimeTarget) this.eventEndTimeTarget.value = ""
     if (this.hasLocationTarget) this.locationTarget.value = ""
     this.selectPost()
   }
@@ -33,14 +36,32 @@ export default class extends Controller {
   selectPost() {
     if (this.hasPostBtnTarget) this.postBtnTarget.classList.add("is-active")
     if (this.hasEventBtnTarget) this.eventBtnTarget.classList.remove("is-active")
-    if (this.hasExpirationSectionTarget) this.expirationSectionTarget.classList.remove("is-hidden")
+    if (this.hasExpirationSectionTarget) {
+      this.expirationSectionTarget.classList.remove("is-hidden")
+      this.setDisabled(this.expirationSectionTarget, false)
+    }
     if (this.hasEventSectionTarget) this.eventSectionTarget.classList.add("is-hidden")
+    this.syncCustomExpiration()
   }
 
   selectEvent() {
     if (this.hasPostBtnTarget) this.postBtnTarget.classList.remove("is-active")
     if (this.hasEventBtnTarget) this.eventBtnTarget.classList.add("is-active")
-    if (this.hasExpirationSectionTarget) this.expirationSectionTarget.classList.add("is-hidden")
+    if (this.hasExpirationSectionTarget) {
+      this.expirationSectionTarget.classList.add("is-hidden")
+      this.setDisabled(this.expirationSectionTarget, true)
+    }
     if (this.hasEventSectionTarget) this.eventSectionTarget.classList.remove("is-hidden")
+  }
+
+  syncCustomExpiration() {
+    if (!this.hasCustomExpirationTarget || !this.hasExpirationSectionTarget) return
+    if (this.expirationSectionTarget.classList.contains("is-hidden")) return
+    const custom = this.expirationSectionTarget.querySelector('input[name="post[expiration_preset]"][value="Custom"]')
+    this.customExpirationTarget.disabled = !(custom && custom.checked)
+  }
+
+  setDisabled(container, disabled) {
+    container.querySelectorAll("input, select, textarea").forEach((el) => { el.disabled = disabled })
   }
 }

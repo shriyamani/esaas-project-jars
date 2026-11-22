@@ -107,6 +107,23 @@ RSpec.describe "Posts", type: :request do
       expect(created_post.expires_at).to be_within(2.seconds).of(expected_end)
     end
 
+    it "creates an event post from the start and end time pickers" do
+      post posts_path, params: {
+        post: {
+          title: "Night Jam",
+          category: "Social",
+          event_date: Date.tomorrow,
+          event_start_time: "21:00",
+          event_end_time: "22:00",
+          location: "Lerner Hall"
+        }
+      }
+
+      created_post = Post.last
+      expect(created_post.event_time).to eq("9:00 PM - 10:00 PM")
+      expect(created_post.expires_at).to be_within(2.seconds).of(Time.zone.parse("#{Date.tomorrow} 10:00 PM"))
+    end
+
     it "displays event badge and details on the feed card" do
       create(:post, user: author, title: "Study Meetup", category: "Academics", event_date: Date.tomorrow, event_time: "3:00 PM", location: "Butler 209")
       get posts_path
@@ -118,6 +135,27 @@ RSpec.describe "Posts", type: :request do
       expect(card.text).to include(Date.tomorrow.strftime("%B %-d, %Y"))
       expect(card.text).to include("3:00 PM")
       expect(card.text).to include("Butler 209")
+    end
+
+    it "pre-fills the custom expiration on the edit page without seconds" do
+      tonight_post = create(:post, user: author, expiration_preset: "Tonight")
+      get edit_post_path(tonight_post)
+
+      value = response.parsed_body.at_css("#post_custom_expires_at")["value"]
+      expect(value).to eq(tonight_post.expires_at.change(sec: 0).strftime("%Y-%m-%dT%H:%M:%S"))
+      expect(value).to end_with(":00")
+    end
+
+    it "moves an event's expiration when its date is changed on edit" do
+      event = create(:post, user: author, event_date: Date.tomorrow, event_time: "9:00 PM", expires_at: nil, expiration_preset: nil)
+      new_date = Date.current + 3.days
+
+      patch post_path(event), params: { post: { event_date: new_date, event_start_time: "18:00", event_end_time: "20:00" } }
+
+      expect(response).to redirect_to(post_path(event))
+      event.reload
+      expect(event.event_time).to eq("6:00 PM - 8:00 PM")
+      expect(event.expires_at).to be_within(2.seconds).of(Time.zone.parse("#{new_date} 8:00 PM"))
     end
 
     it "allows viewing edit page" do
@@ -600,7 +638,7 @@ RSpec.describe "Posts", type: :request do
       expect(form.at_css("input[name='post[category]'][value='Housing']")["checked"]).to eq("checked")
       expect(form.at_css("input[name='post[expiration_preset]'][value='Custom']")["checked"]).to eq("checked")
       expect(form.at_css("input[name='post[custom_expires_at]']")["value"])
-        .to eq(post_record.expires_at.strftime("%Y-%m-%dT%H:%M:%S"))
+        .to eq(post_record.expires_at.change(sec: 0).strftime("%Y-%m-%dT%H:%M:%S"))
       expect(form.at_css("a", text: "Cancel")["href"]).to eq(post_path(post_record))
     end
 
