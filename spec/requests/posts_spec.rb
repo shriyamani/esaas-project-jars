@@ -50,6 +50,33 @@ RSpec.describe "Posts", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
+    it "allows creating an event post with date, time, and location" do
+      expect {
+        post posts_path, params: {
+          post: {
+            title: "Campus Meetup",
+            body: "Meeting in front of Low",
+            category: "Social",
+            expiration_preset: "Custom",
+            custom_expires_at: 1.week.from_now.to_s,
+            event_date: Date.tomorrow,
+            event_time: "5:00 PM",
+            location: "Low Steps"
+          }
+        }
+      }.to change(Post, :count).by(1)
+
+      created_post = Post.last
+      expect(created_post.location).to eq("Low Steps")
+      expect(created_post.event_date).to eq(Date.tomorrow)
+      expect(created_post.event_time).to eq("5:00 PM")
+      expect(response).to redirect_to(post_path(created_post))
+      follow_redirect!
+      expect(response.body).to include("Low Steps")
+      expect(response.body).to include("5:00 PM")
+      expect(response.body).to include("I&#39;m going")
+    end
+
     it "allows viewing edit page" do
       get edit_post_path(post_record)
       expect(response).to have_http_status(:ok)

@@ -95,7 +95,12 @@ class PostsController < ApplicationController
       :anonymous,
       :expiration_preset,
       :custom_expires_at,
-      :expires_at
+      :expires_at,
+      :event_date,
+      :event_time,
+      :location,
+      :date,
+      :time
     )
   end
 end
