@@ -71,8 +71,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_004503) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "event_date"
+    t.string "event_time"
+    t.string "location"
     t.string "expiration_preset"
     t.index ["category"], name: "index_posts_on_category"
+    t.index ["event_date"], name: "index_posts_on_event_date"
     t.index ["expires_at"], name: "index_posts_on_expires_at"
     t.index ["user_id"], name: "index_posts_on_user_id"
   end
@@ -86,6 +90,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_004503) do
     t.datetime "updated_at", null: false
     t.index ["post_id"], name: "index_replies_on_post_id"
     t.index ["user_id"], name: "index_replies_on_user_id"
+  end
+
+  create_table "rsvps", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "post_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id"], name: "index_rsvps_on_post_id"
+    t.index ["user_id", "post_id"], name: "index_rsvps_on_user_id_and_post_id", unique: true
+    t.index ["user_id"], name: "index_rsvps_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -107,4 +121,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_004503) do
   add_foreign_key "posts", "users"
   add_foreign_key "replies", "posts"
   add_foreign_key "replies", "users"
+  add_foreign_key "rsvps", "posts"
+  add_foreign_key "rsvps", "users"
 end

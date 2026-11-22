@@ -10,6 +10,8 @@ class User < ApplicationRecord
   has_many :conversation_participants, dependent: :destroy
   has_many :conversations, through: :conversation_participants
   has_many :messages, dependent: :destroy
+  has_many :rsvps, dependent: :destroy
+  has_many :rsvped_posts, through: :rsvps, source: :post
 
   def unread_conversations_count
     conversations.count { |conversation| conversation.unread_for?(self) }
