@@ -16,7 +16,11 @@ class ConversationsController < ApplicationController
     @conversation = Conversation.for_user(current_user).find(params[:id])
     @messages = @conversation.messages.includes(:user).order(:created_at, :id).to_a
     @message = Message.new
-    @conversation.mark_read_by(current_user) unless request.headers["X-Sec-Purpose"] == "prefetch"
+    unless request.headers["X-Sec-Purpose"] == "prefetch"
+      @conversation.mark_read_by(current_user)
+      current_user.notifications.unread.where(source_type: "Message", source_id: @conversation.messages.select(:id))
+                  .update_all(read_at: Time.current)
+    end
   end
 
   def new

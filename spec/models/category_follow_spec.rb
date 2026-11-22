@@ -21,6 +21,16 @@ RSpec.describe CategoryFollow, type: :model do
     user = create(:user)
     create(:category_follow, user: user, category: "Housing")
     expect(build(:category_follow, user: user, category: "Housing")).not_to be_valid
+    expect { create(:category_follow, user: user, category: "Housing") }
+      .to raise_error(ActiveRecord::RecordInvalid)
+    expect(user.category_follows.where(category: "Housing").count).to eq(1)
+  end
+
+  it "allows one user to follow different categories" do
+    user = create(:user)
+    create(:category_follow, user: user, category: "Housing")
+
+    expect(create(:category_follow, user: user, category: "Academics")).to be_persisted
   end
 
   it "lets two different users follow the same category" do

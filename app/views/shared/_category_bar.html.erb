@@ -1,7 +1,7 @@
 <% on_feed = controller_name == "posts" && action_name == "index" %>
 <% on_calendar = controller_name == "calendars" %>
 <% viewing_following = on_feed && params[:feed] == "following" %>
-<% viewing_mine = on_feed && params[:feed] == "mine" %>
+<% viewing_activity = controller_name == "activities" %>
 <% viewing_all = (on_feed && params[:feed].blank? && !Post::CATEGORIES.include?(params[:category])) || (on_calendar && @selected_category.blank?) %>
 <% followed_categories = current_user.followed_categories %>
 <% followed, others = Post::CATEGORIES.partition { |c| followed_categories.include?(c) } %>
@@ -57,9 +57,8 @@
             </svg>
       <% end %>
 
-      <%= link_to "My Posts",
-            viewing_mine ? posts_path : posts_path(feed: "mine"),
-            class: "category_tab category_label my_posts_tab",
-            aria: { current: (viewing_mine ? "page" : nil) } %>
+      <%= link_to "My Activity", my_activity_path,
+            class: "category_tab category_label my_activity_tab",
+            aria: { current: (viewing_activity ? "page" : nil) } %>
   </div>
 </nav>

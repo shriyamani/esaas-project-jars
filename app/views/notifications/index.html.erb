@@ -1,0 +1,17 @@
+<div class="notifications_page">
+  <div class="notifications_page_header">
+    <h1>Notifications</h1>
+    <% if current_user.notifications.unread.exists? %>
+      <%= button_to "Mark all read", mark_all_read_notifications_path, method: :patch,
+            class: "notifications_mark_all" %>
+    <% end %>
+  </div>
+
+  <% if @notifications.any? %>
+    <div class="notifications_list">
+      <%= render @notifications %>
+    </div>
+  <% else %>
+    <p class="notifications_empty">No notifications yet.</p>
+  <% end %>
+</div>

@@ -35,6 +35,8 @@ No real Google credentials are needed for tests.
 bundle exec rspec       # RSpec validations
 bundle exec cucumber    # Cucumber stories
 ```
+Run both suites sequentially, then review `coverage/index.html` for missed lines.
+`bin/ci` runs both suites as part of the project checks.
 
 ## Current features
 1. **Google O-Auth**\
@@ -85,4 +87,15 @@ These are the following fields that need to be filled out:
 >   - Either "Today", "This week" or a custom expiration date which the user chooses
 
 
-### Expanded UI and additional features coming soon!
+## Notification hooks
+
+Notifications are created automatically when a post, reply, RSVP, or message is first saved. Other flows can call the same public hooks if they create these records elsewhere:
+
+```ruby
+Notification.for_new_post(post)
+Notification.for_reply(reply)
+Notification.for_join(rsvp)
+Notification.for_message(message)
+```
+
+Each hook expects a saved record. Calls are idempotent for the same recipient, event type, and record. New posts go to people following the category; replies and RSVPs go to the post author; messages go to the other conversation participants. People do not receive notifications for their own actions.

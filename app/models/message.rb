@@ -1,6 +1,9 @@
 class Message < ApplicationRecord
   belongs_to :conversation, touch: true
   belongs_to :user
+  has_many :notifications, as: :source, dependent: :destroy
+
+  after_create :notify_participants
 
   validates :body, presence: true, length: { maximum: 2000 }
   validate :sender_must_be_participant
@@ -22,6 +25,10 @@ class Message < ApplicationRecord
   end
 
   private
+
+  def notify_participants
+    Notification.for_message(self)
+  end
 
   def sender_must_be_participant
     return if conversation.nil? || user.nil?

@@ -15,10 +15,12 @@ class Post < ApplicationRecord
   has_many :conversations, dependent: :destroy
   has_many :rsvps, dependent: :destroy
   has_many :attendees, through: :rsvps, source: :user
+  has_many :notifications, as: :source, dependent: :destroy
 
   belongs_to :user
 
   before_validation :apply_expiration_preset
+  after_create :notify_followers
 
   validates :title, presence: true
   validates :category, presence: true, inclusion: { in: CATEGORIES }
@@ -28,6 +30,15 @@ class Post < ApplicationRecord
   validate :event_date_cannot_be_after_expires_at, if: -> { event_date.present? && expires_at.present? }
 
   scope :active, -> { where("expires_at > ?", Time.current) }
+  scope :search, ->(query) {
+    keyword = query.to_s.strip.downcase
+    if keyword.blank?
+      active
+    else
+      pattern = "%#{sanitize_sql_like(keyword, "!")}%"
+      active.where("LOWER(posts.title) LIKE :pattern ESCAPE '!' OR LOWER(posts.body) LIKE :pattern ESCAPE '!'", pattern: pattern)
+    end
+  }
   scope :newest_first, -> { order(created_at: :desc, id: :desc) }
   scope :upcoming, -> { where.not(event_date: nil).where("event_date >= ?", Date.current).order(:event_date) }
   scope :for_user, ->(user) {
@@ -74,16 +85,20 @@ class Post < ApplicationRecord
     return nil unless event_date.present?
     if event_time.present?
       begin
-        Time.zone.parse("#{event_date} #{event_time}") || event_date.to_time.in_time_zone
+        Time.zone.parse("#{event_date} #{event_time}") || event_date.in_time_zone
       rescue StandardError
-        event_date.to_time.in_time_zone
+        event_date.in_time_zone
       end
     else
-      event_date.to_time.in_time_zone
+      event_date.in_time_zone
     end
   end
 
   private
+
+  def notify_followers
+    Notification.for_new_post(self)
+  end
 
   def expires_at_must_be_in_the_future
     errors.add(:expires_at, "must be in the future") if expires_at <= Time.current

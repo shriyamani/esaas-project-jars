@@ -89,10 +89,12 @@
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
   margin-bottom: 2rem;
+  overflow-x: auto;
 }
 
 .simple-calendar {
   width: 100%;
+  min-width: 38rem;
   border-collapse: collapse;
 }
 
@@ -274,4 +276,18 @@
   color: var(--color-calendar-subtle);
   font-size: 0.9375rem;
   margin: 0;
+}
+
+@media (max-width: 600px) {
+  .calendar_grid_wrapper,
+  .upcoming_events_section {
+    padding: 1rem;
+  }
+
+  .upcoming_event_item,
+  .upcoming_event_main,
+  .upcoming_event_details {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
 }

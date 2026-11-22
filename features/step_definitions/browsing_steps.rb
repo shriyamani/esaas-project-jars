@@ -12,6 +12,11 @@ Given("an active post exists with title {string} in category {string}") do |titl
   )
 end
 
+Given("an active post exists with title {string} and body {string} in category {string}") do |title, body, category|
+  create(:post, title: title, body: body, category: category, user: @current_user,
+                expires_at: 3.days.from_now)
+end
+
 Given("an expired post exists with title {string} in category {string}") do |title, category|
   user = User.find_by(email: "student@columbia.edu")
 

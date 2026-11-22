@@ -2,8 +2,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: start;
-  gap: 2rem;
-  padding: 1rem 3rem;
+  gap: 0.75rem;
+  padding: 1rem clamp(1rem, 4vw, 3rem);
 }
 
 .category_tab {
@@ -54,10 +54,6 @@ a.category_tab[aria-current="page"] {
   background: var(--color-accent);
 }
 
-.my_posts_tab {
-  margin-left: 0;
-}
-
 .category_divider {
   width: 2px;
   background: var(--color-primary);
@@ -104,5 +100,17 @@ a.category_tab[aria-current="page"] {
 }
 
 .new_post_button:hover { 
-  background: var(--color-accent); 
+  background: var(--color-primary-hover);
+  color: var(--color-on-primary);
+}
+
+@media (max-width: 700px) {
+  .category_bar_end {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .category_divider {
+    display: none;
+  }
 }

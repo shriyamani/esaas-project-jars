@@ -1,6 +1,9 @@
 class Reply < ApplicationRecord
   belongs_to :post
   belongs_to :user
+  has_many :notifications, as: :source, dependent: :destroy
+
+  after_create :notify_post_author
 
   validates :body,
             presence: true,
@@ -13,6 +16,10 @@ class Reply < ApplicationRecord
   end
 
   private
+
+  def notify_post_author
+    Notification.for_reply(self)
+  end
 
   def post_must_be_active
     return if post.nil?

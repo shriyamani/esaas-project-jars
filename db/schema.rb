@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_17_004503) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_000000) do
   create_table "category_follows", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "category", null: false
@@ -60,6 +60,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_004503) do
     t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer "recipient_id", null: false
+    t.integer "actor_id", null: false
+    t.string "source_type", null: false
+    t.integer "source_id", null: false
+    t.string "kind", null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_id"], name: "index_notifications_on_actor_id"
+    t.index ["recipient_id", "kind", "source_type", "source_id"], name: "index_notifications_on_recipient_kind_and_source", unique: true
+    t.index ["recipient_id", "read_at", "created_at"], name: "index_notifications_on_recipient_id_and_read_at_and_created_at"
+    t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
+    t.index ["source_type", "source_id"], name: "index_notifications_on_source"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -118,6 +134,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_17_004503) do
   add_foreign_key "likes", "users"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
+  add_foreign_key "notifications", "users", column: "actor_id"
+  add_foreign_key "notifications", "users", column: "recipient_id"
   add_foreign_key "posts", "users"
   add_foreign_key "replies", "posts"
   add_foreign_key "replies", "users"

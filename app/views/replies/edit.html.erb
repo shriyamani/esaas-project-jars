@@ -1,4 +1,11 @@
-<h1>Edit reply</h1>
-
 <% cancel_path = @post.expires_at.present? && @post.expires_at > Time.current ? post_path(@post) : posts_path %>
-<%= render "form", post: @post, reply: @reply, show_label: false, rows: 8, cancel_path: cancel_path %>
+<div class="post_page">
+  <%= link_to cancel_path, class: "back_link" do %>
+    <span aria-hidden="true">←</span> Back to post
+  <% end %>
+
+  <div class="post_form_card">
+    <h1 class="post_form_title">Edit reply</h1>
+    <%= render "form", post: @post, reply: @reply, show_label: false, rows: 8, cancel_path: cancel_path %>
+  </div>
+</div>
