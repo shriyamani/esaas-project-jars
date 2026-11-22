@@ -135,6 +135,35 @@ RSpec.describe Post, type: :model do
     end
   end
 
+  describe ".search" do
+    it "matches titles and bodies without case sensitivity and excludes expired posts" do
+      title_match = create(:post, title: "Campus Orchestra", body: "Rehearsal tonight")
+      body_match = create(:post, title: "Music meetup", body: "Bring your ORCHESTRA friends")
+      create(:post, title: "Study group", body: "Meet in the library")
+      expired_match = create(:post, title: "Orchestra archive")
+      expired_match.update_column(:expires_at, 1.day.ago)
+
+      expect(Post.search("  oRcHeStRa  ")).to contain_exactly(title_match, body_match)
+    end
+
+    it "treats SQL wildcard characters as literal text" do
+      exact_match = create(:post, title: "100% ready")
+      create(:post, title: "100 days ready")
+
+      expect(Post.search("100%")).to eq([ exact_match ])
+    end
+
+    it "composes with a category filter and returns active posts for a blank query" do
+      housing = create(:post, title: "Roommate", category: "Housing")
+      create(:post, title: "Roommate", category: "Social")
+      expired = create(:post, title: "Old roommate", category: "Housing")
+      expired.update_column(:expires_at, 1.day.ago)
+
+      expect(Post.where(category: "Housing").search("roommate")).to eq([ housing ])
+      expect(Post.where(category: "Housing").search("  ")).to eq([ housing ])
+    end
+  end
+
   describe "time zone configuration" do
     it "uses Eastern Time" do
       expect(Time.zone.name).to eq("Eastern Time (US & Canada)")

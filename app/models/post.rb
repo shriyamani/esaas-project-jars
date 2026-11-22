@@ -30,6 +30,15 @@ class Post < ApplicationRecord
   validate :event_date_cannot_be_after_expires_at, if: -> { event_date.present? && expires_at.present? }
 
   scope :active, -> { where("expires_at > ?", Time.current) }
+  scope :search, ->(query) {
+    keyword = query.to_s.strip.downcase
+    if keyword.blank?
+      active
+    else
+      pattern = "%#{sanitize_sql_like(keyword, "!")}%"
+      active.where("LOWER(posts.title) LIKE :pattern ESCAPE '!' OR LOWER(posts.body) LIKE :pattern ESCAPE '!'", pattern: pattern)
+    end
+  }
   scope :newest_first, -> { order(created_at: :desc, id: :desc) }
   scope :upcoming, -> { where.not(event_date: nil).where("event_date >= ?", Date.current).order(:event_date) }
   scope :for_user, ->(user) {

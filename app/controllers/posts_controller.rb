@@ -29,8 +29,7 @@ class PostsController < ApplicationController
     end
 
     if @search_query.present?
-      keyword = "%#{Post.sanitize_sql_like(@search_query.downcase, "!")}%"
-      @posts = @posts.where("LOWER(posts.title) LIKE :keyword ESCAPE '!' OR LOWER(posts.body) LIKE :keyword ESCAPE '!'", keyword: keyword)
+      @posts = @posts.search(@search_query)
       @filter_params[:q] = @search_query
     end
 
