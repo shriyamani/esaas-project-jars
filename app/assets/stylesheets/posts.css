@@ -521,3 +521,24 @@
 .post_detail .post_expiration {
   margin-left: auto;
 }
+
+.post_event_details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  background: #f4f7fc;
+  border: 1px solid #d0dcf0;
+}
+
+.post_event_details p {
+  margin: 0;
+}
+
+.rsvp-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}

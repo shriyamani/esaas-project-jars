@@ -5,6 +5,8 @@ module NavigationHelpers
         when "the log in page"   then new_user_session_path
         when "the posts page"    then posts_path
         when "the new post page" then new_post_path
+        when /^the post page for "(.+)"$/
+          Post.find_by!(title: $1).then { |p| post_path(p) }
         when /^the edit page for "(.+)"$/
           Post.find_by!(title: $1).then { |p| edit_post_path(p) }
         when "the FAQ page"      then faq_path

@@ -51,6 +51,21 @@
     </div>
   </fieldset>
 
+  <div class="form_field">
+    <%= form.label :event_date, "Event Date", class: "form_label" %>
+    <%= form.date_field :event_date, class: "form_input" %>
+  </div>
+
+  <div class="form_field">
+    <%= form.label :event_time, "Event Time", class: "form_label" %>
+    <%= form.text_field :event_time, class: "form_input" %>
+  </div>
+
+  <div class="form_field">
+    <%= form.label :location, "Location", class: "form_label" %>
+    <%= form.text_field :location, class: "form_input" %>
+  </div>
+
   <div class="form_footer">
     <%= form.label :anonymous, class: "reply_form_checkbox" do %>
       <%= form.check_box :anonymous %>
