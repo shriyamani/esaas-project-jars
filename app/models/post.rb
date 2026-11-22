@@ -15,10 +15,12 @@ class Post < ApplicationRecord
   has_many :conversations, dependent: :destroy
   has_many :rsvps, dependent: :destroy
   has_many :attendees, through: :rsvps, source: :user
+  has_many :notifications, as: :source, dependent: :destroy
 
   belongs_to :user
 
   before_validation :apply_expiration_preset
+  after_create :notify_followers
 
   validates :title, presence: true
   validates :category, presence: true, inclusion: { in: CATEGORIES }
@@ -84,6 +86,10 @@ class Post < ApplicationRecord
   end
 
   private
+
+  def notify_followers
+    Notification.for_new_post(self)
+  end
 
   def expires_at_must_be_in_the_future
     errors.add(:expires_at, "must be in the future") if expires_at <= Time.current

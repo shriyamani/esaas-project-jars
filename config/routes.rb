@@ -13,6 +13,10 @@ Rails.application.routes.draw do
   resources :conversations, only: [ :index, :show, :new, :create ] do
     resources :messages, only: [ :create, :update ]
   end
+  resources :notifications, only: [ :index ] do
+    post :open, on: :member
+    patch :mark_all_read, on: :collection
+  end
   get "calendar", to: "calendars#show", as: :calendar
   root "posts#index"
 

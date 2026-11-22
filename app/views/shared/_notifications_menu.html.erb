@@ -1,0 +1,35 @@
+<% unread_notifications_count = current_user.notifications.unread.count %>
+<details class="notifications_menu" data-dropdown>
+  <summary class="nav_icon notifications_trigger" aria-label="Notifications, <%= unread_notifications_count %> unread" title="Notifications">
+    <svg viewBox="-0.75 -0.75 25.5 25.5" width="22" height="22" aria-hidden="true">
+      <g fill="none" stroke="var(--color-primary)" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9.5 3V2.6a2.1 2.1 0 0 1 4.2 0V3"/>
+        <path d="M9.5 3C7 3.5 5.1 5.4 4.5 8.5l-1.1 6.9c-.2 1.1-.6 1.6-1.4 2.2l-.4.3c-.8.6-.4 2.6 1.6 2.6h5.2c.4 2 1.7 3.1 3.6 3.1s3.2-1.1 3.6-3.1h5.1c1.8 0 2.8-1.8 1.2-2.9l-.4-.3c-.8-.6-1.1-1.1-1.3-2.3l-1-6.3c-.5-3.1-2.7-5.2-5.7-5.7-.7-.2-1.4-.3-2.1-.3-.8 0-1.4.1-2.1.3Z"/>
+        <path d="M8.4 20.5h7.2"/>
+      </g>
+    </svg>
+    <% if unread_notifications_count.positive? %>
+      <span class="nav_badge notifications_badge" aria-hidden="true"><%= unread_notifications_count %></span>
+    <% end %>
+  </summary>
+
+  <div class="notifications_popover">
+    <div class="notifications_header">
+      <h2>Notifications</h2>
+      <% if unread_notifications_count.positive? %>
+        <%= button_to "Mark all read", mark_all_read_notifications_path, method: :patch,
+              class: "notifications_mark_all" %>
+      <% end %>
+    </div>
+    <% recent_notifications = current_user.notifications.recent_first.includes(:actor, :source).limit(8) %>
+    <% if recent_notifications.any? %>
+      <div class="notifications_list">
+        <%= render partial: "notifications/notification", collection: recent_notifications %>
+      </div>
+      <%= link_to "View all notifications", notifications_path, class: "notifications_view_all" %>
+    <% else %>
+      <p class="notifications_empty">No notifications yet.</p>
+    <% end %>
+  </div>
+</details>

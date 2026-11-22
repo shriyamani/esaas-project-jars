@@ -1,0 +1,4 @@
+<%= button_to open_notification_path(notification), class: "notification_item #{'is-unread' unless notification.read_at?}" do %>
+  <span class="notification_text"><%= notification.summary %></span>
+  <span class="notification_time"><%= time_ago_in_words(notification.created_at) %> ago</span>
+<% end %>

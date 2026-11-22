@@ -1,0 +1,145 @@
+.notifications_menu {
+  position: relative;
+}
+
+.notifications_trigger {
+  position: relative;
+  cursor: pointer;
+  list-style: none;
+}
+
+.notifications_trigger::-webkit-details-marker {
+  display: none;
+}
+
+.notifications_trigger:focus-visible,
+.notification_item:focus-visible,
+.notifications_mark_all:focus-visible,
+.notifications_view_all:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.notifications_badge {
+  top: auto;
+  bottom: 0;
+  right: -0.3rem;
+  background: var(--columbia-magenta);
+}
+
+.notifications_popover {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: min(32rem, 70vh);
+  overflow-y: auto;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.notifications_header,
+.notifications_page_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.notifications_header h2,
+.notifications_page_header h1 {
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.notifications_header h2 {
+  font-size: var(--font-size-lg);
+}
+
+.notifications_page_header {
+  padding: 0 0 var(--space-4);
+}
+
+.notifications_mark_all,
+.notifications_view_all {
+  border: 0;
+  background: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+}
+
+.notifications_list {
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications_list form {
+  margin: 0;
+}
+
+.notification_item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  border-top: var(--border-width) solid var(--color-divider);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.notification_item:hover {
+  background: var(--color-row-hover);
+}
+
+.notification_item.is-unread {
+  background: var(--color-hover-tint);
+  font-weight: var(--font-weight-semibold);
+}
+
+.notification_text {
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-sm);
+}
+
+.notification_time {
+  color: var(--color-text-body);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+}
+
+.notifications_view_all {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-width) solid var(--color-divider);
+  text-align: center;
+}
+
+.notifications_empty {
+  margin: 0;
+  padding: var(--space-4);
+  color: var(--color-text-body);
+}
+
+.notifications_page {
+  max-width: 42rem;
+  margin: 0 auto;
+  background: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-lg);
+}
+

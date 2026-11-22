@@ -12,6 +12,9 @@ class User < ApplicationRecord
   has_many :messages, dependent: :destroy
   has_many :rsvps, dependent: :destroy
   has_many :rsvped_posts, through: :rsvps, source: :post
+  has_many :notifications, foreign_key: :recipient_id, inverse_of: :recipient, dependent: :destroy
+  has_many :sent_notifications, class_name: "Notification", foreign_key: :actor_id,
+                                inverse_of: :actor, dependent: :destroy
 
   def unread_conversations_count
     conversations.count { |conversation| conversation.unread_for?(self) }
