@@ -1,5 +1,5 @@
 class Post < ApplicationRecord
-  CATEGORIES = ["Social", "Academics", "Housing", "Buy/Sell", "Travel", "Help" ].freeze
+  CATEGORIES = [ "Social", "Academics", "Housing", "Buy/Sell", "Travel", "Help" ].freeze
   EXPIRATION_PRESETS = [ "Tonight", "This week", "Custom" ].freeze
   TRENDING_WINDOW = 48.hours
   TRENDING_LIKE_WEIGHT = 1
@@ -12,6 +12,7 @@ class Post < ApplicationRecord
 
   has_many :replies, dependent: :destroy
   has_many :likes, dependent: :destroy
+  has_many :conversations, dependent: :destroy
   has_many :rsvps, dependent: :destroy
   has_many :attendees, through: :rsvps, source: :user
 

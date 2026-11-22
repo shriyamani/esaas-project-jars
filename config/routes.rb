@@ -9,6 +9,9 @@ Rails.application.routes.draw do
     resource :like, only: [ :create, :destroy ]
   end
   resource :category_follow, only: [ :create, :destroy ]
+  resources :conversations, only: [ :index, :show, :new, :create ] do
+    resources :messages, only: [ :create, :update ]
+  end
   root "posts#index"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

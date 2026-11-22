@@ -1,7 +1,8 @@
 <div id="<%= dom_id(reply) %>" class="reply">
-  <span class="reply_avatar" aria-hidden="true">
-    <%= reply.anonymous? ? "?" : reply.display_author.to_s.first.to_s.upcase %>
-  </span>
+  <%= render "users/avatar_menu",
+        user: (reply.anonymous? ? nil : reply.user),
+        initial: (reply.anonymous? ? "?" : reply.display_author.to_s.first.to_s.upcase),
+        avatar_class: "reply_avatar" %>
 
   <div class="reply_content">
     <div class="reply_meta">
