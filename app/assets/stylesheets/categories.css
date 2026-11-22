@@ -9,23 +9,23 @@
 .category_tab {
   display: inline-flex;
   align-items: stretch;
-  border: 2px solid #012169;
+  border: 2px solid var(--color-primary);
   border-radius: 0.5rem;
   overflow: hidden;
   text-decoration: none;
-  color: #012169;
-  background: #ffffff;
+  color: var(--color-primary);
+  background: var(--color-surface);
 }
 
 .category_label {
   padding: 0.5rem 1rem;
   font-weight: 600;
-  color: #012169;
+  color: var(--color-primary);
   text-decoration: none;
 }
 
 .category_label:hover{
-  background: #6CACE4;
+  background: var(--color-accent);
 }
 
 .category_icon {
@@ -34,7 +34,7 @@
   justify-content: center;
   padding: 0 1rem;
   border: none;
-  border-left: 2px solid #012169;
+  border-left: 2px solid var(--color-primary);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -46,12 +46,12 @@
 }
 
 .category_follow_form:hover{
-  background: #e6eef8;
+  background: var(--color-hover-tint);
 }
 
 .category_tab.is-active,
 a.category_tab[aria-current="page"] {
-  background: #6CACE4;
+  background: var(--color-accent);
 }
 
 .my_posts_tab {
@@ -60,7 +60,7 @@ a.category_tab[aria-current="page"] {
 
 .category_divider {
   width: 2px;
-  background: #012169;
+  background: var(--color-primary);
 }
 
 .follow_prompt_buttons {
@@ -70,17 +70,17 @@ a.category_tab[aria-current="page"] {
 }
 
 .follow_prompt_button {
-  border: 2px solid #012169;
+  border: 2px solid var(--color-primary);
   border-radius: 999px;
-  background: #ffffff;
-  color: #012169;
+  background: var(--color-surface);
+  color: var(--color-primary);
   font-weight: 600;
   padding: 0.4rem 0.9rem;
   cursor: pointer;
 }
 
 .follow_prompt_button:hover { 
-  background: #e6eef8; 
+  background: var(--color-hover-tint); 
 }
 
 .category_bar_end {
@@ -96,13 +96,13 @@ a.category_tab[aria-current="page"] {
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border: 2px solid #012169;
+  border: 2px solid var(--color-primary);
   border-radius: 0.5rem;
-  background: #012169;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   text-decoration: none;
 }
 
 .new_post_button:hover { 
-  background: #6CACE4; 
+  background: var(--color-accent); 
 }
