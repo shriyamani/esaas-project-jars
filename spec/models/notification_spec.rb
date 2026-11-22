@@ -11,7 +11,10 @@ RSpec.describe Notification, type: :model do
 
     post = create(:post, user: author, category: "Housing")
 
-    expect(follower.notifications.sole).to have_attributes(kind: "new_post", source: post, actor: author)
+    notification = follower.notifications.sole
+    expect(notification).to have_attributes(kind: "new_post", source: post, actor: author)
+    expect(notification.summary).to eq("New post in Housing: #{post.title}")
+    expect(notification.destination).to eq(post)
     expect(author.notifications).to be_empty
     expect { described_class.for_new_post(post) }.not_to change(described_class, :count)
   end
@@ -32,7 +35,10 @@ RSpec.describe Notification, type: :model do
     post = create(:post, user: author)
     rsvp = create(:rsvp, post: post, user: other)
 
-    expect(author.notifications.sole).to have_attributes(kind: "join", source: rsvp)
+    notification = author.notifications.sole
+    expect(notification).to have_attributes(kind: "join", source: rsvp)
+    expect(notification.summary).to eq("Other Student joined your post: #{post.title}")
+    expect(notification.destination).to eq(post)
     expect { described_class.for_join(rsvp) }.not_to change(described_class, :count)
   end
 
@@ -40,7 +46,10 @@ RSpec.describe Notification, type: :model do
     conversation = Conversation.direct_between(author, other)
     message = create(:message, conversation: conversation, user: author)
 
-    expect(other.notifications.sole).to have_attributes(kind: "message", source: message, actor: author)
+    notification = other.notifications.sole
+    expect(notification).to have_attributes(kind: "message", source: message, actor: author)
+    expect(notification.summary).to include("New message in")
+    expect(notification.destination).to eq(conversation)
     expect(author.notifications).to be_empty
     expect { described_class.for_message(message) }.not_to change(described_class, :count)
   end

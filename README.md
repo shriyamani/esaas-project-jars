@@ -35,6 +35,8 @@ No real Google credentials are needed for tests.
 bundle exec rspec       # RSpec validations
 bundle exec cucumber    # Cucumber stories
 ```
+Run both suites sequentially, then review `coverage/index.html` for missed lines.
+`bin/ci` runs both suites as part of the project checks.
 
 ## Current features
 1. **Google O-Auth**\

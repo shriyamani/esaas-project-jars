@@ -238,6 +238,7 @@
   padding: 0.2rem;
   background: var(--color-surface);
   border: 2px solid var(--color-primary);
+  border-radius: var(--radius-pill);
 }
 
 .messages_tab {
@@ -245,6 +246,7 @@
   color: var(--color-primary);
   font-weight: 600;
   text-decoration: none;
+  border-radius: var(--radius-pill);
 }
 
 .messages_tab:hover { 

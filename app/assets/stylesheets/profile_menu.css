@@ -64,7 +64,7 @@
     background: var(--color-primary);
     color: var(--color-on-primary);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-pill);
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
     font-weight: 600;
@@ -176,7 +176,8 @@
 
   .nav_actions {
     order: 2;
-    margin-left: auto;
+    width: 100%;
+    justify-content: space-between;
   }
 
   .nav_search {

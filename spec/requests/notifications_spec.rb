@@ -17,6 +17,13 @@ RSpec.describe "Notifications", type: :request do
     expect(response.body).to include("replied to your post")
   end
 
+  it "lists the user's notifications on the notifications page" do
+    get notifications_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("replied to your post")
+  end
+
   it "marks an owned notification read before opening its post" do
     notification = author.notifications.sole
 
@@ -43,6 +50,28 @@ RSpec.describe "Notifications", type: :request do
 
     expect(author.notifications.unread.count).to eq(0)
     expect(response).to redirect_to(notifications_path)
+  end
+
+  it "opens a message notification in its conversation" do
+    conversation = Conversation.direct_between(author, other)
+    message = create(:message, conversation: conversation, user: other)
+    notification = author.notifications.find_by!(source: message)
+
+    post open_notification_path(notification)
+
+    expect(response).to redirect_to(conversation_path(conversation))
+    expect(notification.reload.read_at).to be_present
+  end
+
+  it "does not open a conversation the recipient no longer belongs to" do
+    conversation = Conversation.direct_between(author, other)
+    message = create(:message, conversation: conversation, user: other)
+    notification = author.notifications.find_by!(source: message)
+    conversation.conversation_participants.find_by!(user: author).destroy!
+
+    post open_notification_path(notification)
+
+    expect(response).to redirect_to(conversations_path)
   end
 
   it "clears a message notification when its conversation is read" do
