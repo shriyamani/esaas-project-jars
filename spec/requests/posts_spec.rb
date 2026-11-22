@@ -53,6 +53,14 @@ RSpec.describe "Posts", type: :request do
       expect(back_link["href"]).to eq(my_activity_path)
     end
 
+    it "links back to calendar when navigated from calendar" do
+      get post_path(post_record, from: "calendar")
+      expect(response).to have_http_status(:ok)
+      back_link = response.parsed_body.at_css("a.back_link")
+      expect(back_link.text.strip).to eq("← Back to Calendar")
+      expect(back_link["href"]).to eq(calendar_path)
+    end
+
     it "allows creating an event post with date, time, and location" do
       expect {
         post posts_path, params: {

@@ -22,6 +22,7 @@ RSpec.describe "Calendars", type: :request do
         expect(response.body).to include("All events")
         expect(response.body).to include("My events")
         expect(response.body).to include(event.title)
+        expect(response.body).to include(post_path(event, from: "calendar"))
       end
 
       it "filters events for 'My events' tab" do

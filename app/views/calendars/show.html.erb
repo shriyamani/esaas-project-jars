@@ -13,7 +13,7 @@
       <div class="calendar_day_number"><%= date.day %></div>
       <% events.each do |event| %>
         <div class="calendar_event_entry">
-          <%= link_to event.title, post_path(event), class: "calendar_event_link" %>
+          <%= link_to event.title, post_path(event, from: "calendar"), class: "calendar_event_link" %>
         </div>
       <% end %>
     <% end %>
@@ -26,7 +26,7 @@
         <% @upcoming_events.each do |event| %>
           <li class="upcoming_event_item">
             <div class="upcoming_event_main">
-              <%= link_to event.title, post_path(event), class: "upcoming_event_link" %>
+              <%= link_to event.title, post_path(event, from: "calendar"), class: "upcoming_event_link" %>
               <span class="upcoming_event_category"><%= event.category %></span>
             </div>
             <div class="upcoming_event_details">
