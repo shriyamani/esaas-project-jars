@@ -82,4 +82,13 @@ RSpec.describe "Notifications", type: :request do
 
     expect(author.notifications.find_by!(source: message).read_at).to be_present
   end
+
+  it "redirects to notifications path when the notification has no destination" do
+    notification = author.notifications.sole
+    allow_any_instance_of(Notification).to receive(:destination).and_return(nil)
+
+    post open_notification_path(notification)
+
+    expect(response).to redirect_to(notifications_path)
+  end
 end

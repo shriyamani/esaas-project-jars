@@ -31,13 +31,12 @@ module PostsHelper
 
     "#{day}, #{time.strftime('%-l:%M %p')}"
   end
-  
+
   def time_remaining(time)
     minutes = ((time - Time.current) / 60).ceil
     return "less than a minute" if minutes < 1
     return pluralize(minutes, "minute") if minutes < 60
-    
+
     distance_of_time_in_words(Time.current, time).delete_prefix("about ")
   end
-
 end
