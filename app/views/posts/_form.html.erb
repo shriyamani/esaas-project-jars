@@ -1,4 +1,4 @@
-<%= form_with(model: post, class: "post_form") do |form| %>
+<%= form_with(model: post, class: "post_form", data: { controller: "post-form" }) do |form| %>
   <% if post.errors.any? %>
     <div id="error_explanation" class="form_errors">
       <h2><%= pluralize(post.errors.count, "error") %> prohibited this post from being saved:</h2>
@@ -9,6 +9,11 @@
       </ul>
     </div>
   <% end %>
+
+  <div class="post_type_selector" role="group" aria-label="Post type">
+    <button type="button" class="post_type_button <%= 'is-active' unless post.event? %>" data-post-form-target="postBtn" data-action="click->post-form#userSelectPost">Regular Post</button>
+    <button type="button" class="post_type_button <%= 'is-active' if post.event? %>" data-post-form-target="eventBtn" data-action="click->post-form#userSelectEvent">Event</button>
+  </div>
 
   <div class="form_field">
     <%= form.label :title, class: "form_label" %>
@@ -32,7 +37,7 @@
     </div>
   </fieldset>
 
-  <fieldset class="form_field">
+  <fieldset class="form_field" data-post-form-target="expirationSection">
     <legend class="form_label">Expires</legend>
 
     <div class="chip_group">
@@ -51,19 +56,21 @@
     </div>
   </fieldset>
 
-  <div class="form_field">
-    <%= form.label :event_date, "Event Date", class: "form_label" %>
-    <%= form.date_field :event_date, class: "form_input" %>
-  </div>
+  <div class="event_fields_group" data-post-form-target="eventSection">
+    <div class="form_field">
+      <%= form.label :event_date, "Event Date", class: "form_label" %>
+      <%= form.date_field :event_date, class: "form_input", data: { post_form_target: "eventDate" } %>
+    </div>
 
-  <div class="form_field">
-    <%= form.label :event_time, "Event Time", class: "form_label" %>
-    <%= form.text_field :event_time, class: "form_input" %>
-  </div>
+    <div class="form_field">
+      <%= form.label :event_time, "Event Time", class: "form_label" %>
+      <%= form.text_field :event_time, class: "form_input", placeholder: "e.g. 5:00 PM or 9:00 PM - 10:00 PM", data: { post_form_target: "eventTime" } %>
+    </div>
 
-  <div class="form_field">
-    <%= form.label :location, "Location", class: "form_label" %>
-    <%= form.text_field :location, class: "form_input" %>
+    <div class="form_field">
+      <%= form.label :location, "Location", class: "form_label" %>
+      <%= form.text_field :location, class: "form_input", placeholder: "e.g. Low Steps, Butler Library 209", data: { post_form_target: "location" } %>
+    </div>
   </div>
 
   <div class="form_footer">

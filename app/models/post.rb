@@ -85,12 +85,31 @@ class Post < ApplicationRecord
     return nil unless event_date.present?
     if event_time.present?
       begin
-        Time.zone.parse("#{event_date} #{event_time}") || event_date.in_time_zone
+        start_str = event_time.include?("-") ? event_time.split("-").first.strip : event_time
+        Time.zone.parse("#{event_date} #{start_str}") || event_date.in_time_zone
       rescue StandardError
         event_date.in_time_zone
       end
     else
       event_date.in_time_zone
+    end
+  end
+
+  def end_time
+    return nil unless event_date.present?
+    if event_time.present?
+      begin
+        end_str = event_time.include?("-") ? event_time.split("-").last.strip : event_time
+        parsed = Time.zone.parse("#{event_date} #{end_str}")
+        if parsed && start_time && parsed < start_time
+          parsed = parsed + 1.day
+        end
+        parsed || event_date.in_time_zone.end_of_day
+      rescue StandardError
+        event_date.in_time_zone.end_of_day
+      end
+    else
+      event_date.in_time_zone.end_of_day
     end
   end
 
@@ -121,10 +140,14 @@ class Post < ApplicationRecord
     when "This week"
       self.expires_at = Time.current.end_of_week if preset_newly_chosen?
     when "Custom"
-      return if custom_expires_at.blank?
+      if custom_expires_at.present?
+        parsed = custom_expires_at.respond_to?(:in_time_zone) ? custom_expires_at.in_time_zone : Time.zone.parse(custom_expires_at.to_s)
+        self.expires_at = parsed if parsed && parsed.change(sec: 0) != expires_at&.change(sec: 0)
+      end
+    end
 
-      parsed = custom_expires_at.respond_to?(:in_time_zone) ? custom_expires_at.in_time_zone : Time.zone.parse(custom_expires_at.to_s)
-      self.expires_at = parsed if parsed && parsed.change(sec: 0) != expires_at&.change(sec: 0)
+    if event_date.present? && expires_at.blank?
+      self.expires_at = end_time || event_date.in_time_zone.end_of_day
     end
   end
 

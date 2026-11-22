@@ -88,6 +88,38 @@ RSpec.describe "Posts", type: :request do
       expect(response.body).to include("I&#39;m going")
     end
 
+    it "creates an event post with a time range and auto-calculates expiration" do
+      expect {
+        post posts_path, params: {
+          post: {
+            title: "Night Jam",
+            body: "Jam session in studio",
+            category: "Social",
+            event_date: Date.tomorrow,
+            event_time: "9:00 PM - 10:00 PM",
+            location: "Lerner Hall"
+          }
+        }
+      }.to change(Post, :count).by(1)
+
+      created_post = Post.last
+      expected_end = Time.zone.parse("#{Date.tomorrow} 10:00 PM")
+      expect(created_post.expires_at).to be_within(2.seconds).of(expected_end)
+    end
+
+    it "displays event badge and details on the feed card" do
+      create(:post, user: author, title: "Study Meetup", category: "Academics", event_date: Date.tomorrow, event_time: "3:00 PM", location: "Butler 209")
+      get posts_path
+
+      expect(response).to have_http_status(:ok)
+      card = response.parsed_body.at_css(".post_card_event_banner")
+      expect(card).to be_present
+      expect(card.at_css(".post_card_event_badge").text).to eq("Event")
+      expect(card.text).to include(Date.tomorrow.strftime("%B %-d, %Y"))
+      expect(card.text).to include("3:00 PM")
+      expect(card.text).to include("Butler 209")
+    end
+
     it "allows viewing edit page" do
       get edit_post_path(post_record)
       expect(response).to have_http_status(:ok)

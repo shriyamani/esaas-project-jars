@@ -96,6 +96,30 @@ RSpec.describe Post, type: :model do
 
       expect(post.reload.expires_at).to eq(original)
     end
+
+    it "automatically sets expiration to event end time for time ranges" do
+      tomorrow = Date.tomorrow
+      post = build(:post, event_date: tomorrow, event_time: "9:00 PM - 10:00 PM", expires_at: nil, expiration_preset: nil)
+      post.valid?
+      expected_end = Time.zone.parse("#{tomorrow} 10:00 PM")
+      expect(post.expires_at).to be_within(2.seconds).of(expected_end)
+    end
+
+    it "automatically sets expiration to event end time for short time ranges" do
+      tomorrow = Date.tomorrow
+      post = build(:post, event_date: tomorrow, event_time: "9-10pm", expires_at: nil, expiration_preset: nil)
+      post.valid?
+      expected_end = Time.zone.parse("#{tomorrow} 10pm")
+      expect(post.expires_at).to be_within(2.seconds).of(expected_end)
+    end
+
+    it "automatically sets expiration to single event time when no range is given" do
+      tomorrow = Date.tomorrow
+      post = build(:post, event_date: tomorrow, event_time: "5:00 PM", expires_at: nil, expiration_preset: nil)
+      post.valid?
+      expected_time = Time.zone.parse("#{tomorrow} 5:00 PM")
+      expect(post.expires_at).to be_within(2.seconds).of(expected_time)
+    end
   end
 
   describe "#display_author" do
