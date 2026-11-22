@@ -8,6 +8,7 @@ class PostsController < ApplicationController
   def index
     @posts = Post.active.preload(:user, :replies, :likes)
     @filter_params = {}
+    @search_query = params[:q].to_s.strip
 
     if params[:feed] == "following"
       followed = current_user.followed_categories
@@ -24,7 +25,13 @@ class PostsController < ApplicationController
       @view_title = params[:category]
       @filter_params = { category: params[:category] }
     else
-      @view_title = "All posts"
+      @view_title = @search_query.present? ? "Search results" : "All posts"
+    end
+
+    if @search_query.present?
+      keyword = "%#{Post.sanitize_sql_like(@search_query.downcase, "!")}%"
+      @posts = @posts.where("LOWER(posts.title) LIKE :keyword ESCAPE '!' OR LOWER(posts.body) LIKE :keyword ESCAPE '!'", keyword: keyword)
+      @filter_params[:q] = @search_query
     end
 
     @sort = params[:sort] == "trending" ? "trending" : "newest"

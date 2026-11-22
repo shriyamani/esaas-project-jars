@@ -37,9 +37,19 @@
             <span class="brand_name">LionDen</span>
           <% end %>
 
+          <%= form_with url: posts_path, method: :get, class: "nav_search" do |form| %>
+            <%= form.search_field :q, value: @search_query, placeholder: "Search posts", aria: { label: "Search posts" } %>
+            <%= form.button type: :submit, aria: { label: "Search" }, title: "Search" do %>
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            <% end %>
+          <% end %>
+
           <div class="nav_actions">
             <% home_active = controller_name == "posts" && action_name == "index" &&
-                            params[:category].blank? && params[:feed].blank? %>
+                            params[:category].blank? && params[:feed].blank? && params[:q].blank? %>
             <%= link_to root_path, class: "nav_icon", title: "Home",
                   aria: { label: "Home", current: (home_active ? "page" : nil) } do %>
               <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">

@@ -109,6 +109,14 @@
   border-radius: inherit;
 }
 
+.post_search_match {
+  padding-inline: var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--columbia-sky-blue);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
 .post_card:hover {
   background: var(--color-surface-hover);
 }

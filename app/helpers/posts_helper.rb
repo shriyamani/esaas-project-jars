@@ -1,4 +1,21 @@
 module PostsHelper
+  def highlight_post_keyword(text, keyword)
+    return text if keyword.blank?
+
+    parts = text.to_s.split(/(#{Regexp.escape(keyword)})/i)
+    safe_join(parts.each_with_index.map do |part, index|
+      index.odd? ? content_tag(:mark, part, class: "post_search_match") : part
+    end)
+  end
+
+  def post_card_excerpt(body, keyword)
+    if keyword.present?
+      excerpt(body, keyword, radius: 65) || truncate(body, length: 140)
+    else
+      truncate(body, length: 140)
+    end
+  end
+
   def expiration_label(time)
     time = time.in_time_zone
     today = Time.zone.today

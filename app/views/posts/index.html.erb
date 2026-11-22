@@ -23,13 +23,15 @@
         <% end %>
       </div>
     </div>
+  <% elsif @posts.empty? && @search_query.present? %>
+    <p class="feed_empty">No posts found for “<%= @search_query %>”.</p>
   <% elsif @posts.empty? && params[:feed] == "mine" %>
     <p class="feed_empty">You don't have any active posts yet.</p>
   <% elsif @posts.empty? %>
     <p class="feed_empty"><%= params[:feed] == "following" ? "No active posts in the categories you follow." : "No active posts found." %></p>
   <% else %>
     <div class="post_grid">
-      <%= render partial: "posts/post_card", collection: @posts, as: :post %>
+      <%= render partial: "posts/post_card", collection: @posts, as: :post, locals: { search_keyword: @search_query } %>
     </div>
   <% end %>
 </div>

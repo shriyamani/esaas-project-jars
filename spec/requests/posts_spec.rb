@@ -178,6 +178,76 @@ RSpec.describe "Posts", type: :request do
     end
   end
 
+  describe "post search" do
+    before { sign_in other_user }
+
+    def result_titles
+      response.parsed_body.css("#posts .post_card_title").map { |title| title.text.strip }
+    end
+
+    it "searches active post titles and bodies without case sensitivity" do
+      title_match = create(:post, user: author, title: "Campus Orchestra", body: "Rehearsal tonight")
+      body_match = create(:post, user: author, title: "Music Meetup", body: "Bring your ORCHESTRA friends")
+      expired_match = create(:post, user: author, title: "Orchestra Archive")
+      expired_match.update_column(:expires_at, 1.day.ago)
+
+      get posts_path, params: { q: "  orchestra  " }
+
+      expect(result_titles).to contain_exactly(title_match.title, body_match.title)
+      expect(response.parsed_body.at_css(".nav_search input[name='q']")["value"]).to eq("orchestra")
+      expect(response.parsed_body.at_css("main h1").text.strip).to eq("Search results")
+    end
+
+    it "highlights every title match while escaping post content" do
+      create(:post, user: author, title: "Buddies <script>alert('x')</script> BUDDIES", body: "Meet new buddies")
+
+      get posts_path, params: { q: "buddies" }
+
+      card = response.parsed_body.at_css("#posts .post_card")
+      expect(card.css(".post_card_title mark.post_search_match").map(&:text)).to eq([ "Buddies", "BUDDIES" ])
+      expect(card.css(".post_card_body mark.post_search_match").map(&:text)).to eq([ "buddies" ])
+      expect(card.at_css(".post_card_title script")).to be_nil
+      expect(card.at_css(".post_card_title").text).to include("<script>alert('x')</script>")
+    end
+
+    it "shows and highlights a body match beyond the usual card preview" do
+      create(:post, user: author, title: "Trip details", body: "Introduction " * 16 + "FindMe near campus")
+
+      get posts_path, params: { q: "findme" }
+
+      preview = response.parsed_body.at_css("#posts .post_card_body")
+      expect(preview.text).to include("FindMe")
+      expect(preview.at_css("mark.post_search_match").text).to eq("FindMe")
+    end
+
+    it "treats SQL wildcard characters as literal search text" do
+      create(:post, user: author, title: "100% ready")
+      create(:post, user: author, title: "100 days ready")
+
+      get posts_path, params: { q: "100%" }
+
+      expect(result_titles).to eq([ "100% ready" ])
+    end
+
+    it "keeps the search query and category when sorting" do
+      create(:post, user: author, title: "Housing concert", category: "Housing")
+      create(:post, user: author, title: "Social concert", category: "Social")
+
+      get posts_path, params: { category: "Housing", q: "concert" }
+
+      expect(result_titles).to eq([ "Housing concert" ])
+      trending_link = response.parsed_body.css(".feed_sort_option").find { |link| link.text.strip == "Trending" }
+      expect(trending_link["href"]).to eq(posts_path(category: "Housing", q: "concert", sort: "trending"))
+    end
+
+    it "shows a useful empty state for unmatched keywords" do
+      get posts_path, params: { q: "unfindable" }
+
+      expect(result_titles).to be_empty
+      expect(response.parsed_body.at_css("#posts").text).to include("No posts found for “unfindable”.")
+    end
+  end
+
 
   describe "category filtering" do
     before { sign_in author }
@@ -414,6 +484,17 @@ RSpec.describe "Posts", type: :request do
 
     def home_link
       response.parsed_body.at_css("a.nav_icon[aria-label='Home']")
+    end
+
+    it "places a post search form between the brand and navigation icons" do
+      get posts_path
+
+      nav = response.parsed_body.at_css(".main_nav")
+      expect(nav.element_children.map { |element| element["class"] }).to eq([ "brand", "nav_search", "nav_actions" ])
+      search = nav.at_css("form.nav_search")
+      expect(search["action"]).to eq(posts_path)
+      expect(search["method"]).to eq("get")
+      expect(search.at_css("input[name='q']")["aria-label"]).to eq("Search posts")
     end
 
     it "marks the Home icon as current only on the unfiltered feed" do

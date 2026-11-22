@@ -12,10 +12,10 @@
   </header>
 
   <%# The title link stretches over the whole card, so clicking anywhere opens the post %>
-  <h2 class="post_card_title"><%= link_to post.title, post_path(post), class: "post_card_link" %></h2>
+  <h2 class="post_card_title"><%= link_to highlight_post_keyword(post.title, local_assigns[:search_keyword]), post_path(post), class: "post_card_link" %></h2>
 
   <% if post.body.present? %>
-    <p class="post_card_body"><%= truncate(post.body, length: 140) %></p>
+    <p class="post_card_body"><%= highlight_post_keyword(post_card_excerpt(post.body, local_assigns[:search_keyword]), local_assigns[:search_keyword]) %></p>
   <% end %>
 
   <% if local_assigns[:show_event_details] && post.event? %>
