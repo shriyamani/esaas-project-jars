@@ -14,6 +14,7 @@ module NavigationHelpers
         when "the contact page"  then contact_path
         when "the messages page" then conversations_path
         when "the new message page" then new_conversation_path
+        when "the calendar page" then calendar_path
         else raise "No path mapped for '#{page_name}' in navigation_steps.rb"
         end
     end

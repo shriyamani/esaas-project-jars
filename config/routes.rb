@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :conversations, only: [ :index, :show, :new, :create ] do
     resources :messages, only: [ :create, :update ]
   end
+  get "calendar", to: "calendars#show", as: :calendar
   root "posts#index"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

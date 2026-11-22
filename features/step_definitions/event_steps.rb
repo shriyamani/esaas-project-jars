@@ -42,6 +42,22 @@ Given("an event post exists with title {string} in category {string} on {string}
   )
 end
 
+Given("a past event post exists with title {string} in category {string}") do |title, category|
+  author = User.find_by(email: "student@columbia.edu") || create(:user, email: "student@columbia.edu")
+  post = build(
+    :post,
+    title: title,
+    category: category,
+    body: "Past event details",
+    user: author,
+    event_date: Date.yesterday,
+    event_time: "1:00 PM",
+    location: "Campus",
+    expires_at: 1.month.from_now
+  )
+  post.save(validate: false)
+end
+
 Given("I have RSVP'd to the event {string}") do |title|
   post = Post.find_by!(title: title)
   user = @current_user || User.find_by(email: "student@columbia.edu")
@@ -50,6 +66,18 @@ end
 
 Then("the attendee count should be {string}") do |expected_count|
   expect(find(".attendee-count")).to have_content(expected_count)
+end
+
+Then("I should see {string} under upcoming events") do |title|
+  within("#upcoming-events") do
+    expect(page).to have_content(title)
+  end
+end
+
+Then("I should not see {string} under upcoming events") do |title|
+  within("#upcoming-events") do
+    expect(page).not_to have_content(title)
+  end
 end
 
 When("I fill in {string} with tomorrow's date") do |field|

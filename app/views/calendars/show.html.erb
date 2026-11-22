@@ -1,0 +1,47 @@
+<div class="calendar_page">
+  <div class="calendar_header">
+    <h1 class="calendar_title">Calendar</h1>
+  </div>
+
+  <div class="calendar_tabs" role="tablist">
+    <%= link_to "All events", calendar_path(tab: "all", category: @selected_category), class: "calendar_tab #{'active' if @tab == 'all'}", role: "tab", aria: { selected: (@tab == "all") } %>
+    <%= link_to "My events", calendar_path(tab: "my", category: @selected_category), class: "calendar_tab #{'active' if @tab == 'my'}", role: "tab", aria: { selected: (@tab == "my") } %>
+  </div>
+
+  <div class="calendar_grid_wrapper">
+    <%= month_calendar(events: @calendar_events) do |date, events| %>
+      <div class="calendar_day_number"><%= date.day %></div>
+      <% events.each do |event| %>
+        <div class="calendar_event_entry">
+          <%= link_to event.title, post_path(event), class: "calendar_event_link" %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <section id="upcoming-events" class="upcoming_events_section">
+    <h2 class="upcoming_events_title">Upcoming Events</h2>
+    <% if @upcoming_events.any? %>
+      <ul class="upcoming_events_list">
+        <% @upcoming_events.each do |event| %>
+          <li class="upcoming_event_item">
+            <div class="upcoming_event_main">
+              <%= link_to event.title, post_path(event), class: "upcoming_event_link" %>
+              <span class="upcoming_event_category"><%= event.category %></span>
+            </div>
+            <div class="upcoming_event_details">
+              <span class="upcoming_event_datetime">
+                <%= event.event_date.strftime("%B %d, %Y") %><% if event.event_time.present? %> at <%= event.event_time %><% end %>
+              </span>
+              <% if event.location.present? %>
+                <span class="upcoming_event_location">• <%= event.location %></span>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="upcoming_events_empty">No upcoming events.</p>
+    <% end %>
+  </section>
+</div>

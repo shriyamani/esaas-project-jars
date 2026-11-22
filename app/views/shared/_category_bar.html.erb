@@ -1,12 +1,14 @@
 <% on_feed = controller_name == "posts" && action_name == "index" %>
+<% on_calendar = controller_name == "calendars" %>
 <% viewing_following = on_feed && params[:feed] == "following" %>
 <% viewing_mine = on_feed && params[:feed] == "mine" %>
-<% viewing_all = on_feed && params[:feed].blank? && !Post::CATEGORIES.include?(params[:category]) %>
+<% viewing_all = (on_feed && params[:feed].blank? && !Post::CATEGORIES.include?(params[:category])) || (on_calendar && @selected_category.blank?) %>
 <% followed_categories = current_user.followed_categories %>
 <% followed, others = Post::CATEGORIES.partition { |c| followed_categories.include?(c) } %>
 
 <nav aria-label="Categories" class="category_bar">
-  <%= link_to "All", posts_path,
+  <%= link_to "All",
+        (on_calendar ? calendar_path(tab: @tab) : posts_path),
         class: "category_tab category_label",
         aria: { current: (viewing_all ? "page" : nil) } %>
   <%= link_to "Following",
@@ -17,11 +19,15 @@
   <span class="category_divider" aria-hidden="true"></span>
 
   <% (followed + others).each do |category| %>
-    <% active = on_feed && params[:category] == category %>
+    <% active = (on_feed && params[:category] == category) || (on_calendar && @selected_category == category) %>
     <% is_followed = followed.include?(category) %>
     <div class="category_tab <%= 'is-active' if active %>">
       <%= link_to category,
-            active ? posts_path : posts_path(category: category),
+            (if on_calendar
+               active ? calendar_path(tab: @tab) : calendar_path(tab: @tab, category: category)
+             else
+               active ? posts_path : posts_path(category: category)
+             end),
             class: "category_label",
             aria: { current: (active ? "page" : nil) } %>
       <%= button_to category_follow_path,
