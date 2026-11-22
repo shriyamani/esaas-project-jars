@@ -14,6 +14,8 @@
 
     <hr>
 
+    <%= link_to "My Activity", my_activity_path, class: "profile_activity_link" %>
+
     <%= button_to "Log out", destroy_user_session_path, method: :delete %>
   </div>
 </details>

@@ -18,6 +18,13 @@
     <p class="post_card_body"><%= truncate(post.body, length: 140) %></p>
   <% end %>
 
+  <% if local_assigns[:show_event_details] && post.event? %>
+    <p class="activity_event_details">
+      <strong><%= post.event_date.strftime("%B %-d, %Y") %><%= " · #{post.event_time}" if post.event_time.present? %></strong>
+      <% if post.location.present? %><span><%= post.location %></span><% end %>
+    </p>
+  <% end %>
+
   <footer class="post_card_footer">
     <div class="post_card_stats">
       <span class="post_card_tag"><%= post.category %></span>

@@ -1,0 +1,61 @@
+<% content_for :title, "My Activity · LionDen" %>
+
+<div class="activity_page">
+  <header class="activity_header">
+    <span class="activity_avatar" aria-hidden="true"><%= current_user.name.to_s.first.upcase %></span>
+    <div>
+      <h1>My Activity</h1>
+      <p><%= current_user.name %></p>
+      <p><%= current_user.email %></p>
+    </div>
+  </header>
+
+  <nav class="activity_nav" aria-label="My Activity sections">
+    <%= link_to "My posts (#{@my_posts.size})", "#my-posts" %>
+    <%= link_to "Posts I joined (#{@joined_posts.size})", "#joined-posts" %>
+    <%= link_to "My RSVPs (#{@rsvped_posts.size})", "#my-rsvps" %>
+  </nav>
+
+  <section id="my-posts" class="activity_section" aria-labelledby="my-posts-heading">
+    <div class="activity_section_header">
+      <div>
+        <h2 id="my-posts-heading">My posts</h2>
+        <p>Posts you've shared that are still active.</p>
+      </div>
+      <%= link_to "New post", new_post_path, class: "activity_action" %>
+    </div>
+    <% if @my_posts.any? %>
+      <div class="post_grid"><%= render partial: "posts/post_card", collection: @my_posts, as: :post %></div>
+    <% else %>
+      <p class="activity_empty">You don't have any active posts yet.</p>
+    <% end %>
+  </section>
+
+  <section id="joined-posts" class="activity_section" aria-labelledby="joined-posts-heading">
+    <div class="activity_section_header">
+      <div>
+        <h2 id="joined-posts-heading">Posts I joined</h2>
+        <p>Posts where you've replied or joined a group discussion.</p>
+      </div>
+    </div>
+    <% if @joined_posts.any? %>
+      <div class="post_grid"><%= render partial: "posts/post_card", collection: @joined_posts, as: :post %></div>
+    <% else %>
+      <p class="activity_empty">You haven't joined any active posts yet.</p>
+    <% end %>
+  </section>
+
+  <section id="my-rsvps" class="activity_section" aria-labelledby="my-rsvps-heading">
+    <div class="activity_section_header">
+      <div>
+        <h2 id="my-rsvps-heading">My RSVPs</h2>
+        <p>Events you're going to that are still active.</p>
+      </div>
+    </div>
+    <% if @rsvped_posts.any? %>
+      <div class="post_grid"><%= render partial: "posts/post_card", collection: @rsvped_posts, as: :post, locals: { show_event_details: true } %></div>
+    <% else %>
+      <p class="activity_empty">You haven't RSVP'd to any active events yet.</p>
+    <% end %>
+  </section>
+</div>

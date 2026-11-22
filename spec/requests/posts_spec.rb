@@ -48,6 +48,9 @@ RSpec.describe "Posts", type: :request do
     it "allows viewing post" do
       get post_path(post_record)
       expect(response).to have_http_status(:ok)
+      back_link = response.parsed_body.at_css("a.back_link")
+      expect(back_link.text.strip).to eq("← Back to My Activity")
+      expect(back_link["href"]).to eq(my_activity_path)
     end
 
     it "allows creating an event post with date, time, and location" do
@@ -318,11 +321,10 @@ RSpec.describe "Posts", type: :request do
       expect(sort_link["href"]).to eq(posts_path(feed: "mine", sort: "trending"))
     end
 
-    it "marks My Posts as current and links it back to All posts" do
+    it "links to My Activity from the category bar" do
       get posts_path, params: { feed: "mine" }
-      link = response.parsed_body.at_css("a.my_posts_tab")
-      expect(link["aria-current"]).to eq("page")
-      expect(link["href"]).to eq(posts_path)
+      link = response.parsed_body.at_css("a.my_activity_tab")
+      expect(link["href"]).to eq(my_activity_path)
     end
   end
 
@@ -451,6 +453,10 @@ RSpec.describe "Posts", type: :request do
 
     it "offers every category and expiration preset as a choice on the new form" do
       get new_post_path
+
+      back_link = response.parsed_body.at_css("a.back_link")
+      expect(back_link.text.strip).to eq("← Back to My Activity")
+      expect(back_link["href"]).to eq(my_activity_path)
 
       categories = form.css("input[type=radio][name='post[category]']").map { |r| r["value"] }
       presets = form.css("input[type=radio][name='post[expiration_preset]']").map { |r| r["value"] }

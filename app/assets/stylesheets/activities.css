@@ -1,0 +1,116 @@
+.activity_page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.activity_header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--color-primary);
+}
+
+.activity_avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--space-7);
+  height: var(--space-7);
+  border-radius: var(--radius-circle);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.activity_header h1,
+.activity_section h2,
+.activity_header p,
+.activity_section_header p {
+  margin: 0;
+}
+
+.activity_header h1 {
+  font-size: var(--font-size-2xl);
+}
+
+.activity_header p,
+.activity_section_header p {
+  margin-top: var(--space-1);
+  color: var(--color-text-body);
+  font-size: var(--font-size-md);
+  overflow-wrap: anywhere;
+}
+
+.activity_nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  border-bottom: var(--border-width) solid var(--color-divider-soft);
+  padding-bottom: var(--space-3);
+}
+
+.activity_nav a,
+.activity_action {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--space-7);
+  padding: 0 var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.activity_nav a:hover,
+.activity_action:hover {
+  background: var(--color-hover-tint);
+}
+
+.activity_nav a:focus-visible,
+.activity_action:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--space-1);
+}
+
+.activity_section {
+  scroll-margin-top: var(--space-4);
+}
+
+.activity_section_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.activity_section h2 {
+  color: var(--color-primary);
+  font-size: var(--font-size-xl);
+}
+
+.activity_empty {
+  margin: 0;
+  padding: var(--space-5);
+  border: var(--border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-body);
+  font-size: var(--font-size-md);
+}
+
+.activity_event_details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  color: var(--color-text-body);
+  font-size: var(--font-size-sm);
+}
