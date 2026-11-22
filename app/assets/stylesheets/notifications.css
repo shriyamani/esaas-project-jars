@@ -61,10 +61,6 @@
   font-size: var(--font-size-lg);
 }
 
-.notifications_page_header {
-  padding: 0 0 var(--space-4);
-}
-
 .notifications_mark_all,
 .notifications_view_all {
   border: 0;
@@ -139,7 +135,7 @@
   max-width: 42rem;
   margin: 0 auto;
   background: var(--color-surface);
-  border: var(--border);
+  border: 3px solid var(--color-primary);
   border-radius: var(--radius-lg);
 }
 

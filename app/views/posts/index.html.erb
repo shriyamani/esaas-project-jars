@@ -1,3 +1,4 @@
+<%= turbo_frame_tag "posts_feed", target: "_top", data: { turbo_action: "replace" } do %>
 <div class="feed_header">
   <h1><%= @view_title %></h1>
   <nav class="feed_sort" aria-label="Sort posts">
@@ -35,3 +36,4 @@
     </div>
   <% end %>
 </div>
+<% end %>

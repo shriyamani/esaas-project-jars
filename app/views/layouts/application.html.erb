@@ -38,8 +38,9 @@
             <span class="brand_name">LionDen</span>
           <% end %>
 
-          <%= form_with url: posts_path, method: :get, class: "nav_search" do |form| %>
-            <%= form.search_field :q, value: @search_query, placeholder: "Search posts", aria: { label: "Search posts" } %>
+          <%= form_with url: posts_path, method: :get, class: "nav_search", data: { controller: "live-search" } do |form| %>
+            <%= form.search_field :q, value: @search_query, placeholder: "Search posts", autocomplete: "off",
+                  aria: { label: "Search posts" }, data: { action: "input->live-search#queue" } %>
             <%= form.button type: :submit, aria: { label: "Search" }, title: "Search" do %>
               <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
                 <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/>
