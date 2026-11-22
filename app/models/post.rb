@@ -85,12 +85,12 @@ class Post < ApplicationRecord
     return nil unless event_date.present?
     if event_time.present?
       begin
-        Time.zone.parse("#{event_date} #{event_time}") || event_date.to_time.in_time_zone
+        Time.zone.parse("#{event_date} #{event_time}") || event_date.in_time_zone
       rescue StandardError
-        event_date.to_time.in_time_zone
+        event_date.in_time_zone
       end
     else
-      event_date.to_time.in_time_zone
+      event_date.in_time_zone
     end
   end
 

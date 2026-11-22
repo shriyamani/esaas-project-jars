@@ -246,10 +246,16 @@ RSpec.describe Post, type: :model do
     let(:freeze_time) { Time.zone.local(2026, 11, 15, 12, 0, 0) }
 
     it "uses midnight when an event time cannot be parsed" do
-      date = Date.current + 2.days
+      date = Date.new(2026, 11, 24)
       post = build(:post, event_date: date, event_time: "not a time")
 
-      expect(post.start_time).to eq(date.to_time.in_time_zone)
+      expect(post.start_time).to eq(Time.zone.local(2026, 11, 24))
+    end
+
+    it "uses local midnight when an event has no time" do
+      post = build(:post, event_date: Date.new(2026, 11, 24), event_time: nil)
+
+      expect(post.start_time).to eq(Time.zone.local(2026, 11, 24))
     end
 
     it "is valid when event date is before post expires" do
