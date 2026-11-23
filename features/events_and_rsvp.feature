@@ -12,7 +12,7 @@ Feature: Event posts and RSVP
     And I choose "Custom"
     And I fill in "Custom expiration" with a custom expiration date
     And I fill in "Event Date" with tomorrow's date
-    And I fill in "Event Time" with "4:00 PM"
+    And I fill in "Start" with "16:00"
     And I fill in "Location" with "South Lawn"
     And I press "Create Post"
     Then I should see "Post was successfully created."
