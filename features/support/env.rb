@@ -7,7 +7,9 @@
 
 require "simplecov"
 SimpleCov.command_name "Cucumber"
-SimpleCov.start "rails"
+SimpleCov.start "rails" do
+  enable_coverage :branch
+end
 require "cucumber/rails"
 
 # By default, any exception happening in your Rails application will bubble up
