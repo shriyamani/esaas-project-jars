@@ -108,7 +108,8 @@ class PostsController < ApplicationController
       :event_end_time,
       :location,
       :date,
-      :time
+      :time,
+      :spots_available
     )
   end
 end

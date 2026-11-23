@@ -3,9 +3,13 @@
     <%= link_to calendar_path, class: "back_link" do %>
       <span aria-hidden="true">←</span> Back to Calendar
     <% end %>
-  <% else %>
+  <% elsif params[:from] == "my_activity" %>
     <%= link_to my_activity_path, class: "back_link" do %>
       <span aria-hidden="true">←</span> Back to My Activity
+    <% end %>
+  <% else %>
+    <%= link_to posts_path, class: "back_link" do %>
+      <span aria-hidden="true">←</span> Back to All posts
     <% end %>
   <% end %>
 
@@ -57,6 +61,8 @@
     <% if @post.body.present? %>
       <div class="post_detail_body"><%= simple_format(@post.body) %></div>
     <% end %>
+
+    <%= render "posts/membership_controls", post: @post %>
 
     <footer class="post_card_footer">
       <div class="post_card_stats">

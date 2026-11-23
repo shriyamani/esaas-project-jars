@@ -5,20 +5,46 @@
 
   <section class="chat_card" aria-labelledby="chat_title">
     <header class="chat_header">
-      <h1 id="chat_title" class="chat_title"><%= @conversation.title_for(current_user) %></h1>
+      <% renamable = @conversation.renamable_by?(current_user) %>
+      <% if renamable && params[:renaming].present? %>
+        <%= form_with(model: @conversation, class: "chat_rename_form") do |form| %>
+          <%= form.label :name, "Chat name", class: "visually_hidden" %>
+          <%= form.text_field :name, maxlength: Conversation::NAME_MAX_LENGTH, autofocus: true,
+                class: "form_input", placeholder: @conversation.post.title %>
+          <%= link_to "Cancel", conversation_path(@conversation), class: "text_action" %>
+          <%= form.submit "Save", class: "primary_button" %>
+        <% end %>
+      <% else %>
+        <h1 id="chat_title" class="chat_title"><%= @conversation.title_for(current_user) %></h1>
+        <% if renamable %>
+          <%= link_to conversation_path(@conversation, renaming: 1), class: "chat_rename_icon",
+                aria: { label: "Rename chat" }, title: "Rename chat" do %>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path d="M4 20h4L18.5 9.5a2.12 2.12 0 0 0-3-3L5 17v3z M13.5 6.5l3 3" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          <% end %>
+        <% end %>
+      <% end %>
       <% if @conversation.post %>
         <%= link_to "View post", post_path(@conversation.post), class: "text_action" %>
       <% end %>
     </header>
 
     <div id="messages" class="message_list">
-      <% if @messages.empty? %>
+      <% if @conversation.group? && @conversation.participants.count == 1 %>
+        <p class="messages_empty">No one has joined yet. Messages you send here will be seen by anyone who joins.</p>
+      <% elsif @messages.empty? %>
         <p class="messages_empty">Say hi to start the conversation.</p>
       <% end %>
 
-      <% last_message = @messages.last %>
+      <% last_message = @messages.reverse.find { |message| !message.event? } %>
 
       <% @messages.each do |message| %>
+        <% if message.event? %>
+          <p id="<%= dom_id(message) %>" class="chat_event"><%= message.body %></p>
+          <% next %>
+        <% end %>
         <% mine = message.user_id == current_user.id %>
         <% editing = mine && params[:editing].to_i == message.id && message.editable_by?(current_user) %>
 

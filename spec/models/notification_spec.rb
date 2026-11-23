@@ -60,4 +60,24 @@ RSpec.describe Notification, type: :model do
 
     expect { post.destroy! }.to change(described_class, :count).by(-1)
   end
+
+  it "returns nil summary and destination when its source no longer exists" do
+    post = create(:post, user: author, spots_available: 2)
+    create(:post_membership, post: post, user: other)
+    notification = author.notifications.find_by!(kind: "join")
+    notification.update_columns(source_id: Post.maximum(:id) + 1) # simulate a source that no longer exists
+
+    notification.reload
+    expect(notification.summary).to be_nil
+    expect(notification.destination).to be_nil
+  end
+
+  it "summarizes a leave notification and links to the post" do
+    post = create(:post, user: author, spots_available: 2)
+    create(:post_membership, post: post, user: other).destroy
+
+    notification = author.notifications.find_by!(kind: "leave")
+    expect(notification.summary).to eq("Other Student left your post: #{post.title}")
+    expect(notification.destination).to eq(post)
+  end
 end

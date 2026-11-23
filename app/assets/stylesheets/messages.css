@@ -355,3 +355,36 @@
   align-items: center;
   gap: 0.75rem;
 }
+
+.chat_rename_form {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chat_rename_form .form_input {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.chat_rename_icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.chat_rename_icon:hover {
+  background: var(--color-divider);
+}
+
+.chat_event {
+  align-self: center;
+  margin: 0.25rem 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--color-text-body);
+  text-align: center;
+}

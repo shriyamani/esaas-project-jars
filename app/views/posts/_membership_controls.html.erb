@@ -1,0 +1,40 @@
+<% if post.spots_available.present? %>
+  <% joined = post.joined_by?(current_user) %>
+  <% is_author = post.user_id == current_user.id %>
+  <% conversation = post.group_conversation if joined || is_author %>
+
+  <div class="post_membership_section">
+    <p class="post_membership_count">
+      <strong><%= post.spots_filled %> of <%= post.spots_available %> spots filled</strong>
+    </p>
+
+    <% if joined || (is_author && conversation) %>
+      <div class="post_membership_actions">
+        <% if joined %>
+          <%= button_to "Leave",
+                post_post_membership_path(post),
+                method: :delete,
+                class: "small_button small_button--danger" %>
+        <% end %>
+
+        <% if conversation %>
+          <%= link_to "Open group chat",
+                conversation_path(conversation),
+                class: "small_button" %>
+        <% end %>
+      </div>
+
+    <% elsif !is_author &&
+             post.expires_at > Time.current &&
+             !post.full? %>
+
+      <%= button_to "Join",
+            post_post_membership_path(post),
+            method: :post,
+            class: "small_button" %>
+
+    <% elsif post.full? %>
+      <p class="post_full_notice"><span aria-hidden="true">🔒</span> All spots filled</p>
+    <% end %>
+  </div>
+<% end %>

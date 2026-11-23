@@ -56,7 +56,7 @@
                 </span>
               <span class="conversation_preview">
                 <% if last %>
-                  <%= last.user_id == current_user.id ? "You: " : "" %><%= truncate(last.body, length: 70) %>
+                  <%= last.user_id == current_user.id && !last.event? ? "You: " : "" %><%= truncate(last.body, length: 70) %>
                 <% else %>
                   No messages yet
                 <% end %>

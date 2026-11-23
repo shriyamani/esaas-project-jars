@@ -33,6 +33,6 @@ class MessagesController < ApplicationController
   end
 
   def set_own_message
-    @message = @conversation.messages.where(user: current_user).find(params[:id])
+    @message = @conversation.messages.texts.where(user: current_user).find(params[:id])
   end
 end

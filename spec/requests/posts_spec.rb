@@ -45,12 +45,24 @@ RSpec.describe "Posts", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
-    it "allows viewing post" do
+    it "allows viewing post and links back to All posts by default" do
       get post_path(post_record)
       expect(response).to have_http_status(:ok)
       back_link = response.parsed_body.at_css("a.back_link")
+      expect(back_link.text.strip).to eq("← Back to All posts")
+      expect(back_link["href"]).to eq(posts_path)
+    end
+
+    it "links back to My Activity when navigated from My Activity" do
+      get post_path(post_record, from: "my_activity")
+      back_link = response.parsed_body.at_css("a.back_link")
       expect(back_link.text.strip).to eq("← Back to My Activity")
       expect(back_link["href"]).to eq(my_activity_path)
+    end
+
+    it "links feed cards to the post without a from param" do
+      get posts_path
+      expect(response.parsed_body.at_css("a.post_card_link[href='#{post_path(post_record)}']")).to be_present
     end
 
     it "links back to calendar when navigated from calendar" do
@@ -174,6 +186,17 @@ RSpec.describe "Posts", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
       expect(post_record.reload.title).to eq("Original Title")
       expect(response.body).to include("Title can&#39;t be blank")
+    end
+
+    it "shows an error instead of clearing spots once someone has joined" do
+      post_record.update!(spots_available: 2)
+      create(:post_membership, post: post_record, user: other_user)
+
+      patch post_path(post_record), params: { post: { spots_available: "" } }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(post_record.reload.spots_available).to eq(2)
+      expect(response.body).to include("Spots available can&#39;t be removed after people have joined")
     end
 
     it "allows deleting their post" do

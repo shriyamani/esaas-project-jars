@@ -17,12 +17,15 @@ class Post < ApplicationRecord
   has_many :rsvps, dependent: :destroy
   has_many :attendees, through: :rsvps, source: :user
   has_many :notifications, as: :source, dependent: :destroy
+  has_many :post_memberships, dependent: :destroy
+  has_many :joined_users, through: :post_memberships, source: :user
 
   belongs_to :user
 
   before_validation :compose_event_time
   before_validation :apply_expiration_preset
   after_create :notify_followers
+  after_save :ensure_group_conversation, if: -> { spots_available.present? }
 
   validates :title, presence: true
   validates :category, presence: true, inclusion: { in: CATEGORIES }
@@ -31,6 +34,8 @@ class Post < ApplicationRecord
   validates :expiration_preset, inclusion: { in: EXPIRATION_PRESETS }, allow_nil: true
   validate :event_end_time_requires_start_time
   validate :event_date_cannot_be_after_expires_at, if: -> { event_date.present? && expires_at.present? }
+  validates :spots_available, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validate :spots_available_cannot_be_less_than_memberships
 
   scope :active, -> { where("expires_at > ?", Time.current) }
   scope :search, ->(query) {
@@ -127,7 +132,49 @@ class Post < ApplicationRecord
     end
   end
 
+  def spots_filled
+    post_memberships.count
+  end
+
+  def spots_left
+    return nil if spots_available.nil?
+
+    [spots_available - spots_filled, 0].max
+  end
+
+  def full?
+    spots_available.present? && spots_left.zero?
+  end
+
+  def joined_by?(user)
+    return false unless user.present?
+
+    post_memberships.exists?(user_id: user.id)
+  end
+
+  def group_conversation
+    conversations.find_by(kind: "group")
+  end
+
   private
+
+  def ensure_group_conversation
+    conversation = conversations.find_or_create_by!(kind: "group")
+    conversation.conversation_participants.find_or_create_by!(user: user)
+  end
+
+  def spots_available_cannot_be_less_than_memberships
+    return unless persisted?
+
+    joined = post_memberships.count
+    return if joined.zero?
+
+    if spots_available.nil?
+      errors.add(:spots_available, "can't be removed after people have joined")
+    elsif spots_available < joined
+      errors.add(:spots_available, "cannot be less than the number of joined users")
+    end
+  end
 
   def event_time_parts
     event_time.to_s.split("-").map(&:strip).reject(&:blank?)

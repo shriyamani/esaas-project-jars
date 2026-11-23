@@ -32,6 +32,8 @@ RSpec.describe "My Activity", type: :request do
     expect(response.parsed_body.at_css("#my-rsvps .activity_event_details").text).to include("Low Steps", event_post.event_date.strftime("%B %-d, %Y"))
     expect(response.parsed_body.at_css("a.my_activity_tab")["aria-current"]).to eq("page")
     expect(response.parsed_body.at_css(".profile_activity_link")["href"]).to eq(my_activity_path)
+    hrefs = response.parsed_body.css("a.post_card_link").map { |link| link["href"] }
+    expect(hrefs).to all(end_with("from=my_activity"))
   end
 
   it "does not show expired posts or count an authored post as joined" do

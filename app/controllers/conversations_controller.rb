@@ -27,6 +27,21 @@ class ConversationsController < ApplicationController
     @email = params[:email]
   end
 
+  def update
+    conversation = Conversation.for_user(current_user).find(params[:id])
+
+    unless conversation.renamable_by?(current_user)
+      return redirect_to conversation_path(conversation), alert: "Only the post's author can rename this chat."
+    end
+
+    if conversation.update(name: params.dig(:conversation, :name))
+      redirect_to conversation_path(conversation), notice: "Chat renamed."
+    else
+      redirect_to conversation_path(conversation, renaming: 1),
+                  alert: conversation.errors.full_messages.to_sentence
+    end
+  end
+
   def create
     if params[:user_id].blank? && params[:email].to_s.strip.empty?
       return redirect_to new_conversation_path, alert: "Enter an email address."

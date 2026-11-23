@@ -419,4 +419,162 @@ RSpec.describe Post, type: :model do
       expect(Post.for_user(nil)).to be_empty
     end
   end
+
+
+  describe "post capacity" do
+    let(:author) { create(:user) }
+    let(:student1) { create(:user) }
+    let(:student2) { create(:user) }
+    let(:post) { create(:post, user: author, spots_available: 2) }
+
+    describe "spots_available validation" do
+      it "allows posts without a capacity" do
+        post.spots_available = nil
+
+        expect(post).to be_valid
+      end
+
+      it "rejects zero spots" do
+        post.spots_available = 0
+
+        expect(post).not_to be_valid
+      end
+
+      it "rejects negative spots" do
+        post.spots_available = -1
+
+        expect(post).not_to be_valid
+      end
+
+      it "rejects non-integer spots" do
+        post.spots_available = 1.5
+
+        expect(post).not_to be_valid
+      end
+
+      it "does not allow reducing capacity below the number of joined students" do
+        create(:post_membership, post: post, user: student1)
+        create(:post_membership, post: post, user: student2)
+
+        post.spots_available = 1
+
+        expect(post).not_to be_valid
+      end
+
+      it "does not allow clearing spots after someone has joined" do
+        create(:post_membership, post: post, user: student1)
+
+        post.spots_available = nil
+
+        expect(post).not_to be_valid
+        expect(post.errors[:spots_available]).to include("can't be removed after people have joined")
+      end
+
+      it "allows clearing spots again once everyone has left" do
+        create(:post_membership, post: post, user: student1).destroy!
+
+        post.spots_available = nil
+
+        expect(post).to be_valid
+      end
+    end
+
+    describe "capacity methods" do
+      it "starts with zero filled spots" do
+        expect(post.spots_filled).to eq(0)
+      end
+
+      it "counts joined students" do
+        create(:post_membership, post: post, user: student1)
+
+        expect(post.spots_filled).to eq(1)
+        expect(post.spots_left).to eq(1)
+      end
+
+      it "recognizes when a post is full" do
+        create(:post_membership, post: post, user: student1)
+        create(:post_membership, post: post, user: student2)
+
+        expect(post.full?).to be true
+        expect(post.spots_left).to eq(0)
+      end
+
+      it "recognizes when a post is not full" do
+        create(:post_membership, post: post, user: student1)
+
+        expect(post.full?).to be false
+      end
+
+      it "tracks whether a student joined" do
+        create(:post_membership, post: post, user: student1)
+
+        expect(post.joined_by?(student1)).to be true
+        expect(post.joined_by?(student2)).to be false
+      end
+
+      it "frees a spot when a student leaves" do
+        membership = create(:post_membership, post: post, user: student1)
+        membership.destroy!
+
+        expect(post.spots_filled).to eq(0)
+        expect(post.spots_left).to eq(2)
+      end
+
+      it "does not consider posts without a capacity full" do
+        post.update!(spots_available: nil)
+
+        expect(post.full?).to be false
+        expect(post.spots_left).to be_nil
+      end
+    end
+  end
+
+
+  describe "group conversation" do
+    let(:author) { create(:user) }
+
+    it "creates a group chat with the author when a post has spots" do
+      post = create(:post, user: author, spots_available: 3)
+
+      conversation = post.group_conversation
+      expect(conversation).to be_present
+      expect(conversation.participants).to contain_exactly(author)
+    end
+
+    it "does not create a group chat for a post without spots" do
+      post = create(:post, user: author, spots_available: nil)
+
+      expect(post.group_conversation).to be_nil
+    end
+
+    it "creates the group chat when spots are added by editing the post" do
+      post = create(:post, user: author, spots_available: nil)
+
+      post.update!(spots_available: 2)
+
+      expect(post.group_conversation.participants).to contain_exactly(author)
+    end
+
+    it "keeps a single group chat across later edits" do
+      post = create(:post, user: author, spots_available: 2)
+
+      expect { post.update!(title: "New title", spots_available: 4) }
+        .not_to change(Conversation, :count)
+    end
+
+    it "adds joiners to the same chat the author already has" do
+      post = create(:post, user: author, spots_available: 2)
+      original = post.group_conversation
+      joiner = create(:user)
+
+      Post.transaction do
+        post.post_memberships.create!(user: joiner)
+        post.conversations.find_or_create_by!(kind: "group")
+            .conversation_participants.find_or_create_by!(user: joiner)
+      end
+
+      expect(post.reload.group_conversation).to eq(original)
+      expect(original.participants).to contain_exactly(author, joiner)
+    end
+  end
 end
