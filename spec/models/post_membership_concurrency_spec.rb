@@ -42,12 +42,8 @@ RSpec.describe "Post membership concurrency", type: :model do
             results << :joined
           rescue ActiveRecord::RecordNotSaved
             results << :full
-          rescue ActiveRecord::StatementInvalid => e
-            if e.cause.is_a?(SQLite3::BusyException)
-              results << :busy
-            else
-              results << e
-            end
+          rescue *PostMembershipsController::LOCK_CONTENTION_ERRORS
+            results << :busy
           rescue StandardError => e
             results << e
           end

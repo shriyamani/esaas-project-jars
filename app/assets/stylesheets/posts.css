@@ -667,3 +667,23 @@
 .post_membership_count {
   margin-bottom: 10px;
 }
+
+.post_membership_actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.post_membership_actions form {
+  margin: 0;
+}
+
+.post_full_notice {
+  margin: 0;
+  color: var(--color-danger-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

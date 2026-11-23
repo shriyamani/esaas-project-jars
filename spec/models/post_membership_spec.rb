@@ -46,4 +46,41 @@ RSpec.describe PostMembership, type: :model do
       }.by(1)
     end
   end
+
+  describe "join and leave notifications" do
+    it "points the join notification at the post" do
+      create(:post_membership, post: post, user: student)
+
+      expect(author.notifications.sole).to have_attributes(kind: "join", actor: student, source: post)
+    end
+
+    it "keeps the join notification and adds a leave notification when someone leaves" do
+      membership = create(:post_membership, post: post, user: student)
+
+      membership.destroy
+
+      expect(author.notifications.recent_first.map(&:kind)).to eq(%w[leave join])
+      expect(author.notifications.map(&:summary)).to all(include(post.title))
+    end
+
+    it "records every join and leave when the same person rejoins" do
+      create(:post_membership, post: post, user: student).destroy
+      create(:post_membership, post: post, user: student)
+
+      expect(author.notifications.order(:id).map(&:kind)).to eq(%w[join leave join])
+    end
+
+    it "records joins from different people separately" do
+      create(:post_membership, post: post, user: student)
+      create(:post_membership, post: post, user: create(:user))
+
+      expect(author.notifications.where(kind: "join").count).to eq(2)
+    end
+
+    it "does not send leave notifications when the post itself is deleted" do
+      create(:post_membership, post: post, user: student)
+
+      expect { post.destroy }.to change { Notification.count }.to(0)
+    end
+  end
 end

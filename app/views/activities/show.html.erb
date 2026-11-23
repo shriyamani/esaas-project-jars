@@ -25,7 +25,7 @@
       <%= link_to "New post", new_post_path, class: "activity_action" %>
     </div>
     <% if @my_posts.any? %>
-      <div class="post_grid"><%= render partial: "posts/post_card", collection: @my_posts, as: :post %></div>
+      <div class="post_grid"><%= render partial: "posts/post_card", collection: @my_posts, as: :post, locals: { from: "my_activity" } %></div>
     <% else %>
       <p class="activity_empty">You don't have any active posts yet.</p>
     <% end %>
@@ -39,7 +39,7 @@
       </div>
     </div>
     <% if @joined_posts.any? %>
-      <div class="post_grid"><%= render partial: "posts/post_card", collection: @joined_posts, as: :post %></div>
+      <div class="post_grid"><%= render partial: "posts/post_card", collection: @joined_posts, as: :post, locals: { from: "my_activity" } %></div>
     <% else %>
       <p class="activity_empty">You haven't joined any active posts yet.</p>
     <% end %>
@@ -53,7 +53,7 @@
       </div>
     </div>
     <% if @rsvped_posts.any? %>
-      <div class="post_grid"><%= render partial: "posts/post_card", collection: @rsvped_posts, as: :post, locals: { show_event_details: true } %></div>
+      <div class="post_grid"><%= render partial: "posts/post_card", collection: @rsvped_posts, as: :post, locals: { show_event_details: true, from: "my_activity" } %></div>
     <% else %>
       <p class="activity_empty">You haven't RSVP'd to any active events yet.</p>
     <% end %>

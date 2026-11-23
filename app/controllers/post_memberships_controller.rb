@@ -1,5 +1,15 @@
 
 class PostMembershipsController < ApplicationController
+  # Database-agnostic errors Rails raises when another request holds the lock:
+  # SQLite's busy error becomes StatementTimeout; Postgres raises Deadlocked or
+  # LockWaitTimeout. Referencing SQLite3 directly would raise NameError in
+  # production, where the sqlite3 gem isn't loaded.
+  LOCK_CONTENTION_ERRORS = [
+    ActiveRecord::StatementTimeout,
+    ActiveRecord::LockWaitTimeout,
+    ActiveRecord::Deadlocked
+  ].freeze
+
   before_action :set_post
 
   def create
@@ -46,18 +56,17 @@ class PostMembershipsController < ApplicationController
           user: @post.user
         )
 
-        conversation.conversation_participants.find_or_create_by!(
-          user: current_user
-        )
+        conversation.add_member(current_user)
       end
 
       redirect_to conversation_path(conversation), notice: "You joined this post."
+    rescue ActiveRecord::RecordNotUnique
+      # Two join requests from the same user raced past the joined_by? check.
+      redirect_to @post, alert: "You have already joined this post."
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved
-        redirect_to @post, alert: "Unable to join this post. It may be full or expired."
-    rescue ActiveRecord::StatementInvalid => e
-        raise unless e.cause.is_a?(SQLite3::BusyException)
-
-        redirect_to @post, alert: "This post is busy. Please try again."
+      redirect_to @post, alert: "Unable to join this post. It may be full or expired."
+    rescue *LOCK_CONTENTION_ERRORS
+      redirect_to @post, alert: "This post is busy. Please try again."
     end
   end
 
@@ -72,11 +81,7 @@ class PostMembershipsController < ApplicationController
 
         conversation = @post.conversations.find_by(kind: "group")
 
-        if conversation
-          conversation.conversation_participants
-                      .where(user: current_user)
-                      .destroy_all
-        end
+        conversation&.remove_member(current_user)
       end
     end
 

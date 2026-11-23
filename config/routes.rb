@@ -11,7 +11,7 @@ Rails.application.routes.draw do
     resource :post_membership, only: [ :create, :destroy ]
   end
   resource :category_follow, only: [ :create, :destroy ]
-  resources :conversations, only: [ :index, :show, :new, :create ] do
+  resources :conversations, only: [ :index, :show, :new, :create, :update ] do
     resources :messages, only: [ :create, :update ]
   end
   resources :notifications, only: [ :index ] do

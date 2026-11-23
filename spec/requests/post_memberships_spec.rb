@@ -148,4 +148,95 @@ RSpec.describe "Post memberships", type: :request do
       expect(response).to have_http_status(:not_found)
     end
   end
+
+  describe "group chat button on the post page" do
+    it "shows the author an Open group chat link once someone has joined" do
+      sign_in student
+      post post_post_membership_path(post_record)
+      conversation = post_record.conversations.find_by!(kind: "group")
+
+      sign_in author
+      get post_path(post_record)
+
+      expect(response.body).to include("Open group chat")
+      expect(response.body).to include(conversation_path(conversation))
+      expect(response.body).not_to include(">Leave<")
+    end
+
+    it "shows the author the group chat link before anyone joins" do
+      sign_in author
+      get post_path(post_record)
+
+      expect(response.body).to include("Open group chat")
+      expect(response.body).to include(conversation_path(post_record.group_conversation))
+    end
+
+    it "tells the author no one has joined yet when they are alone in the chat" do
+      sign_in author
+      get conversation_path(post_record.group_conversation)
+
+      expect(response.body).to include("No one has joined yet")
+    end
+
+    it "drops the waiting note once someone joins" do
+      sign_in student
+      post post_post_membership_path(post_record)
+
+      get conversation_path(post_record.group_conversation)
+
+      expect(response.body).not_to include("No one has joined yet")
+    end
+  end
+
+  describe "join notification after a member leaves" do
+    it "keeps the join notification, adds a leave notification, and the notifications page loads" do
+      sign_in student
+      post post_post_membership_path(post_record)
+      delete post_post_membership_path(post_record)
+
+      expect(author.notifications.order(:id).map(&:kind)).to eq(%w[join leave])
+
+      sign_in author
+      get notifications_path
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("joined your post: #{post_record.title}")
+      expect(response.body).to include("left your post: #{post_record.title}")
+    end
+  end
+
+  describe "database errors while joining" do
+    before do
+      post_record
+      sign_in student
+    end
+
+    PostMembershipsController::LOCK_CONTENTION_ERRORS.each do |error_class|
+      it "asks the user to retry on #{error_class.name.demodulize}" do
+        allow_any_instance_of(PostMembership)
+          .to receive(:save!).and_raise(error_class.new("locked"))
+
+        post post_post_membership_path(post_record)
+
+        expect(response).to redirect_to(post_path(post_record))
+        expect(flash[:alert]).to eq("This post is busy. Please try again.")
+      end
+    end
+
+    it "treats a duplicate-join race as already joined" do
+      allow_any_instance_of(PostMembership)
+        .to receive(:save!).and_raise(ActiveRecord::RecordNotUnique.new("duplicate"))
+
+      post post_post_membership_path(post_record)
+
+      expect(response).to redirect_to(post_path(post_record))
+      expect(flash[:alert]).to eq("You have already joined this post.")
+    end
+
+    it "does not swallow unrelated database errors" do
+      allow_any_instance_of(PostMembership)
+        .to receive(:save!).and_raise(ActiveRecord::StatementInvalid.new("boom"))
+
+      expect { post post_post_membership_path(post_record) }.to raise_error(ActiveRecord::StatementInvalid)
+    end
+  end
 end

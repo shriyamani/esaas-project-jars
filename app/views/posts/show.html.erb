@@ -3,9 +3,13 @@
     <%= link_to calendar_path, class: "back_link" do %>
       <span aria-hidden="true">←</span> Back to Calendar
     <% end %>
-  <% else %>
+  <% elsif params[:from] == "my_activity" %>
     <%= link_to my_activity_path, class: "back_link" do %>
       <span aria-hidden="true">←</span> Back to My Activity
+    <% end %>
+  <% else %>
+    <%= link_to posts_path, class: "back_link" do %>
+      <span aria-hidden="true">←</span> Back to All posts
     <% end %>
   <% end %>
 

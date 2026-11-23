@@ -21,6 +21,14 @@ class NotificationCreationService
       deliver(recipient: rsvp.post.user, actor: rsvp.user, kind: "join", source: rsvp)
     end
 
+    def for_post_join(membership)
+      record_event(membership, kind: "join")
+    end
+
+    def for_post_leave(membership)
+      record_event(membership, kind: "leave")
+    end
+
     def for_message(message)
       message.conversation.participants.where.not(id: message.user_id).find_each do |recipient|
         deliver(recipient: recipient, actor: message.user, kind: "message", source: message)
@@ -31,6 +39,13 @@ class NotificationCreationService
 
     def deliver(recipient:, actor:, kind:, source:)
       Notification.create_or_find_by!(recipient: recipient, actor: actor, kind: kind, source: source)
+    end
+
+    def record_event(membership, kind:)
+      post = membership.post
+      return if membership.user_id == post.user_id
+
+      Notification.create!(recipient: post.user, actor: membership.user, kind: kind, source: post)
     end
   end
 end

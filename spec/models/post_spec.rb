@@ -461,6 +461,22 @@ RSpec.describe Post, type: :model do
         expect(post).not_to be_valid
       end
 
+      it "does not allow clearing spots after someone has joined" do
+        create(:post_membership, post: post, user: student1)
+
+        post.spots_available = nil
+
+        expect(post).not_to be_valid
+        expect(post.errors[:spots_available]).to include("can't be removed after people have joined")
+      end
+
+      it "allows clearing spots again once everyone has left" do
+        create(:post_membership, post: post, user: student1).destroy!
+
+        post.spots_available = nil
+
+        expect(post).to be_valid
+      end
     end
 
     describe "capacity methods" do
@@ -513,4 +529,52 @@ RSpec.describe Post, type: :model do
     end
   end
 
+
+  describe "group conversation" do
+    let(:author) { create(:user) }
+
+    it "creates a group chat with the author when a post has spots" do
+      post = create(:post, user: author, spots_available: 3)
+
+      conversation = post.group_conversation
+      expect(conversation).to be_present
+      expect(conversation.participants).to contain_exactly(author)
+    end
+
+    it "does not create a group chat for a post without spots" do
+      post = create(:post, user: author, spots_available: nil)
+
+      expect(post.group_conversation).to be_nil
+    end
+
+    it "creates the group chat when spots are added by editing the post" do
+      post = create(:post, user: author, spots_available: nil)
+
+      post.update!(spots_available: 2)
+
+      expect(post.group_conversation.participants).to contain_exactly(author)
+    end
+
+    it "keeps a single group chat across later edits" do
+      post = create(:post, user: author, spots_available: 2)
+
+      expect { post.update!(title: "New title", spots_available: 4) }
+        .not_to change(Conversation, :count)
+    end
+
+    it "adds joiners to the same chat the author already has" do
+      post = create(:post, user: author, spots_available: 2)
+      original = post.group_conversation
+      joiner = create(:user)
+
+      Post.transaction do
+        post.post_memberships.create!(user: joiner)
+        post.conversations.find_or_create_by!(kind: "group")
+            .conversation_participants.find_or_create_by!(user: joiner)
+      end
+
+      expect(post.reload.group_conversation).to eq(original)
+      expect(original.participants).to contain_exactly(author, joiner)
+    end
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_012248) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_180000) do
   create_table "category_follows", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "category", null: false
@@ -36,6 +36,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_012248) do
     t.string "kind", default: "direct", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
     t.index ["post_id"], name: "index_conversations_on_post_id"
     t.index ["post_id"], name: "index_conversations_one_group_per_post", unique: true, where: "kind = 'group'"
   end
@@ -57,6 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_012248) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "edited_at"
+    t.string "kind", default: "text", null: false
     t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
@@ -72,7 +74,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_012248) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["actor_id"], name: "index_notifications_on_actor_id"
-    t.index ["recipient_id", "kind", "source_type", "source_id"], name: "index_notifications_on_recipient_kind_and_source", unique: true
+    t.index ["recipient_id", "kind", "source_type", "source_id"], name: "index_notifications_on_recipient_kind_and_source", unique: true, where: "NOT (kind IN ('join', 'leave') AND source_type = 'Post')"
     t.index ["recipient_id", "read_at", "created_at"], name: "index_notifications_on_recipient_id_and_read_at_and_created_at"
     t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
     t.index ["source_type", "source_id"], name: "index_notifications_on_source"

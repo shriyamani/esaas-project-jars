@@ -25,6 +25,7 @@ class Post < ApplicationRecord
   before_validation :compose_event_time
   before_validation :apply_expiration_preset
   after_create :notify_followers
+  after_save :ensure_group_conversation, if: -> { spots_available.present? }
 
   validates :title, presence: true
   validates :category, presence: true, inclusion: { in: CATEGORIES }
@@ -151,14 +152,28 @@ class Post < ApplicationRecord
     post_memberships.exists?(user_id: user.id)
   end
 
+  def group_conversation
+    conversations.find_by(kind: "group")
+  end
+
   private
 
-  def spots_available_cannot_be_less_than_memberships
-    return if spots_available.nil?
-    return unless persisted?
-    return if spots_available >= post_memberships.count
+  def ensure_group_conversation
+    conversation = conversations.find_or_create_by!(kind: "group")
+    conversation.conversation_participants.find_or_create_by!(user: user)
+  end
 
-    errors.add(:spots_available, "cannot be less than the number of joined users")
+  def spots_available_cannot_be_less_than_memberships
+    return unless persisted?
+
+    joined = post_memberships.count
+    return if joined.zero?
+
+    if spots_available.nil?
+      errors.add(:spots_available, "can't be removed after people have joined")
+    elsif spots_available < joined
+      errors.add(:spots_available, "cannot be less than the number of joined users")
+    end
   end
 
   def event_time_parts

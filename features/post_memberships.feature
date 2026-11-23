@@ -37,7 +37,8 @@ Feature: Joining posts with available spots
     When I open the post with available spots
     And I press "Join"
     Then I should see "Uber to JFK"
-    And I should see "Say hi to start the conversation."
+    And I should see "joined the chat"
+    And I should not see "Say hi to start the conversation."
 
   Scenario: Leaving frees a spot
     Given I have joined the post with available spots
