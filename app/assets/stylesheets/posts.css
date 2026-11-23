@@ -657,3 +657,13 @@
   font-weight: 600;
   color: var(--color-primary);
 }
+
+.post_membership_section {
+  position: relative;
+  z-index: 2;
+  margin: 16px 0;
+}
+
+.post_membership_count {
+  margin-bottom: 10px;
+}

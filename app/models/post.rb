@@ -17,6 +17,8 @@ class Post < ApplicationRecord
   has_many :rsvps, dependent: :destroy
   has_many :attendees, through: :rsvps, source: :user
   has_many :notifications, as: :source, dependent: :destroy
+  has_many :post_memberships, dependent: :destroy
+  has_many :joined_users, through: :post_memberships, source: :user
 
   belongs_to :user
 
@@ -31,6 +33,8 @@ class Post < ApplicationRecord
   validates :expiration_preset, inclusion: { in: EXPIRATION_PRESETS }, allow_nil: true
   validate :event_end_time_requires_start_time
   validate :event_date_cannot_be_after_expires_at, if: -> { event_date.present? && expires_at.present? }
+  validates :spots_available, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validate :spots_available_cannot_be_less_than_memberships
 
   scope :active, -> { where("expires_at > ?", Time.current) }
   scope :search, ->(query) {
@@ -127,7 +131,35 @@ class Post < ApplicationRecord
     end
   end
 
+  def spots_filled
+    post_memberships.count
+  end
+
+  def spots_left
+    return nil if spots_available.nil?
+
+    [spots_available - spots_filled, 0].max
+  end
+
+  def full?
+    spots_available.present? && spots_left.zero?
+  end
+
+  def joined_by?(user)
+    return false unless user.present?
+
+    post_memberships.exists?(user_id: user.id)
+  end
+
   private
+
+  def spots_available_cannot_be_less_than_memberships
+    return if spots_available.nil?
+    return unless persisted?
+    return if spots_available >= post_memberships.count
+
+    errors.add(:spots_available, "cannot be less than the number of joined users")
+  end
 
   def event_time_parts
     event_time.to_s.split("-").map(&:strip).reject(&:blank?)

@@ -419,4 +419,98 @@ RSpec.describe Post, type: :model do
       expect(Post.for_user(nil)).to be_empty
     end
   end
+
+
+  describe "post capacity" do
+    let(:author) { create(:user) }
+    let(:student1) { create(:user) }
+    let(:student2) { create(:user) }
+    let(:post) { create(:post, user: author, spots_available: 2) }
+
+    describe "spots_available validation" do
+      it "allows posts without a capacity" do
+        post.spots_available = nil
+
+        expect(post).to be_valid
+      end
+
+      it "rejects zero spots" do
+        post.spots_available = 0
+
+        expect(post).not_to be_valid
+      end
+
+      it "rejects negative spots" do
+        post.spots_available = -1
+
+        expect(post).not_to be_valid
+      end
+
+      it "rejects non-integer spots" do
+        post.spots_available = 1.5
+
+        expect(post).not_to be_valid
+      end
+
+      it "does not allow reducing capacity below the number of joined students" do
+        create(:post_membership, post: post, user: student1)
+        create(:post_membership, post: post, user: student2)
+
+        post.spots_available = 1
+
+        expect(post).not_to be_valid
+      end
+
+    end
+
+    describe "capacity methods" do
+      it "starts with zero filled spots" do
+        expect(post.spots_filled).to eq(0)
+      end
+
+      it "counts joined students" do
+        create(:post_membership, post: post, user: student1)
+
+        expect(post.spots_filled).to eq(1)
+        expect(post.spots_left).to eq(1)
+      end
+
+      it "recognizes when a post is full" do
+        create(:post_membership, post: post, user: student1)
+        create(:post_membership, post: post, user: student2)
+
+        expect(post.full?).to be true
+        expect(post.spots_left).to eq(0)
+      end
+
+      it "recognizes when a post is not full" do
+        create(:post_membership, post: post, user: student1)
+
+        expect(post.full?).to be false
+      end
+
+      it "tracks whether a student joined" do
+        create(:post_membership, post: post, user: student1)
+
+        expect(post.joined_by?(student1)).to be true
+        expect(post.joined_by?(student2)).to be false
+      end
+
+      it "frees a spot when a student leaves" do
+        membership = create(:post_membership, post: post, user: student1)
+        membership.destroy!
+
+        expect(post.spots_filled).to eq(0)
+        expect(post.spots_left).to eq(2)
+      end
+
+      it "does not consider posts without a capacity full" do
+        post.update!(spots_available: nil)
+
+        expect(post.full?).to be false
+        expect(post.spots_left).to be_nil
+      end
+    end
+  end
+
 end

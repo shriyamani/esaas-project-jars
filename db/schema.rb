@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_012248) do
   create_table "category_follows", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "category", null: false
@@ -78,6 +78,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_000000) do
     t.index ["source_type", "source_id"], name: "index_notifications_on_source"
   end
 
+  create_table "post_memberships", force: :cascade do |t|
+    t.integer "post_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["post_id", "user_id"], name: "index_post_memberships_on_post_id_and_user_id", unique: true
+    t.index ["post_id"], name: "index_post_memberships_on_post_id"
+    t.index ["user_id"], name: "index_post_memberships_on_user_id"
+  end
+
   create_table "posts", force: :cascade do |t|
     t.string "title", null: false
     t.text "body"
@@ -91,6 +101,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_000000) do
     t.string "event_time"
     t.string "location"
     t.string "expiration_preset"
+    t.integer "spots_available"
     t.index ["category"], name: "index_posts_on_category"
     t.index ["event_date"], name: "index_posts_on_event_date"
     t.index ["expires_at"], name: "index_posts_on_expires_at"
@@ -136,6 +147,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_000000) do
   add_foreign_key "messages", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "notifications", "users", column: "recipient_id"
+  add_foreign_key "post_memberships", "posts"
+  add_foreign_key "post_memberships", "users"
   add_foreign_key "posts", "users"
   add_foreign_key "replies", "posts"
   add_foreign_key "replies", "users"

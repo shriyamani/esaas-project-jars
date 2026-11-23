@@ -58,6 +58,8 @@
       <div class="post_detail_body"><%= simple_format(@post.body) %></div>
     <% end %>
 
+    <%= render "posts/membership_controls", post: @post %>
+
     <footer class="post_card_footer">
       <div class="post_card_stats">
         <span class="post_card_tag"><%= @post.category %></span>

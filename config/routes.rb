@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :replies, only: [ :create, :edit, :update, :destroy ]
     resource :like, only: [ :create, :destroy ]
     resource :rsvp, only: [ :create, :destroy ]
+    resource :post_membership, only: [ :create, :destroy ]
   end
   resource :category_follow, only: [ :create, :destroy ]
   resources :conversations, only: [ :index, :show, :new, :create ] do
